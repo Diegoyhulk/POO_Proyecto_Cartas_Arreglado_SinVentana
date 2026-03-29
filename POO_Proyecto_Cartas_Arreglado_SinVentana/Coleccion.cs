@@ -1,0 +1,179 @@
+﻿namespace POO_Proyecto_Cartas_Arreglado_SinVentana;
+
+using static System.Console;
+
+public class Coleccion
+{
+    public List<Cartas> cartas { get; set; } = new List<Cartas>();
+    public abstract class Cartas
+    {
+        public abstract string Nombre { get; set; }
+        public string Type;
+    }
+
+    
+    
+    public void GenerarMazo()
+    {
+        for (int i = 1; i <= 21; i++)
+        {
+            switch (i)
+            {
+                case <= 5:
+                    cartas.Add(new Organos
+                    {
+                        Type = "Sanguíneo"
+                    });
+                    break;
+                case <= 10 and >5:
+                    cartas.Add(new Organos
+                    {
+                        Type = "Ósseo"
+                    });
+                    break;
+                case <= 15 and > 10:
+                    cartas.Add(new Organos
+                    {
+                        Type = "Neuronal"
+                    });
+                    break;
+                case <= 20 and >15:
+                    cartas.Add(new Organos
+                    {
+                        Type = "Gástrico"
+                    });
+                    break;
+                case <= 21 and >20:
+                    cartas.Add(new Organos
+                    {
+                        Type = "Comodín"
+                    });
+                    break;
+            }
+        }
+        for (int i = 1; i <= 17; i++)
+        {
+            switch (i)
+            {
+                case <= 4:
+                    cartas.Add(new Bacterias
+                    {
+                        Type = "Sanguíneo"
+                    });
+                    break;
+                case <= 8 and >4:
+                    cartas.Add(new Bacterias
+                    {
+                        Type = "Ósseo"
+                    });
+                    break;
+                case <= 12 and > 8:
+                    cartas.Add(new Bacterias
+                    {
+                        Type = "Neuronal"
+                    });
+                    break;
+                case <= 16 and >12:
+                    cartas.Add(new Bacterias
+                    {
+                        Type = "Gástrico"
+                    });
+                    break;
+                case <= 17 and >16:
+                    cartas.Add(new Bacterias
+                    {
+                        Type = "Comodín"
+                    });
+                    break;
+            }
+        }
+        for (int i = 1; i <= 20; i++)
+        {
+            switch (i)
+            {
+                case <= 4:
+                    cartas.Add(new Curas
+                    {
+                        Type = "Sanguíneo"
+                    });
+                    break;
+                case <= 8 and >4:
+                    cartas.Add(new Curas
+                    {
+                        Type = "Ósseo"
+                    });
+                    break;
+                case <= 12 and > 8:
+                    cartas.Add(new Curas
+                    {
+                        Type = "Neuronal"
+                    });
+                    break;
+                case <= 16 and >12:
+                    cartas.Add(new Curas
+                    {
+                        Type = "Gástrico"
+                    });
+                    break;
+                case <= 20 and >16:
+                    cartas.Add(new Curas
+                    {
+                        Type = "Comodín"
+                    });
+                    break;
+            }
+        }
+        for (int i = 1; i <= 10; i++)
+        {
+            if (i <= 2)
+            {
+                cartas.Add(new Especiales{Uso ="Robo"});
+            }
+            if (i is <= 4 and >2)
+            {
+                cartas.Add(new Especiales{Uso ="Descarte"});
+            }
+            if (i is <= 6 and >4)
+            {
+                cartas.Add(new Especiales{Uso ="Transplante"});
+            }
+            if (i is <= 8 and >6)
+            {
+                cartas.Add(new Especiales{Uso ="Error"});
+            }
+            if (i is <= 10 and >8)
+            {
+                cartas.Add(new Especiales{Uso ="Contagio"});
+            }
+        }
+    }
+}
+
+public class Organos : Coleccion.Cartas, IInfectable
+{
+    public override string Nombre { get; set; } = "Organo";
+    public bool sano { get; set; } = true;
+    public List<Bacterias> bacterias;
+    public bool Infectar(Player player, int i)
+    {
+        WriteLine("");
+        ReadLine();
+        return false;
+    }
+}
+
+public class Bacterias : Coleccion.Cartas
+{
+    public override string Nombre { get; set; } = "Bacteria";
+}
+
+public class Curas : Coleccion.Cartas
+{
+    public override string Nombre { get; set; } = "Cura";
+}
+
+public class Especiales : Coleccion.Cartas
+{
+    public override string Nombre { get; set; } = "Especial";
+    public string Uso;
+}
