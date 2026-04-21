@@ -5,6 +5,7 @@ public class Mesa
 {
     int orgsal = 0;
     public IInfectable iinf = new Organos();
+    private EnemyAI eai = new EnemyAI();
     public int turnos { get; set; }
     public void Turno(ref Coleccion coleccion,ref Mazo mazo,ref Player player,ref Enemy enemy, ref bool win)
     {
@@ -29,7 +30,7 @@ public class Mesa
             if (input == "2" &&  player.cartasmano.Count > 0){if (Descarte(coleccion.cartas,mazo, player)) break;}
             if (input == "3")
             {
-                if(UsarCarta(player)) break;
+                if(UsarCarta(player, coleccion.cartas)) break;
             }
             else{InputNotValid();}
         }
@@ -37,7 +38,8 @@ public class Mesa
         {
             if (cart is Organos org)
             {
-                orgsal++;
+                if(org.sano)
+                 orgsal++;
             }
             if (orgsal == 4)
             {
@@ -45,10 +47,14 @@ public class Mesa
             }
         }
         //ETurno(enemy, mazo);
+        
+        //Turno Enemigo
+        //eai.ETurno(enemy, mazo);
+        //Acaba el turno
         turnos++;
     }
     //Acciones Player
-    private bool UsarCarta(Player player)
+    private bool UsarCarta(Player player,List<Coleccion.Cartas> cartas)
     {
         WriteLine("Que carta quieres usar?\n" +
                       "(1)Bacteria\n" +
@@ -59,7 +65,7 @@ public class Mesa
         switch (input)
         {
             case "1":
-                if(UsarBacteria(player)){return true;}
+                if(UsarBacteria(player, cartas )){return true;}
                 return false;
             case "2":
                 if(UsarCura(player)){return true;}
@@ -71,11 +77,10 @@ public class Mesa
                 InputNotValid();
                 return false;
         }
-        
     }
-    private bool UsarBacteria(Player player)
+    private bool UsarBacteria(Player player, List<Coleccion.Cartas> cartas)
     {
-        if (iinf.Infectar(player, 1)) return true;
+        if(iinf.Infectar(player,cartas)){return true;}
         return false;
     }
     private bool UsarCura(Player player)
@@ -96,15 +101,15 @@ public class Mesa
         if (hascard)
         {
             WriteLine("Que organo quieres usar?");
-            if (player.cartasmano.Count > 0 && player.cartasmano[0] is Organos xorgano)
+            if (player.cartasmano.Count > 0 && player.cartasmano[0] is Organos)
             {
                 WriteLine($"(1):"); Nombrar_Carta(player, 0);
             }
-            if (player.cartasmano.Count > 1 && player.cartasmano[1] is Organos yorgano)
+            if (player.cartasmano.Count > 1 && player.cartasmano[1] is Organos)
             {
                 WriteLine($"(2):"); Nombrar_Carta(player, 1);
             }
-            if (player.cartasmano.Count > 2 && player.cartasmano[2] is Organos zorgano)
+            if (player.cartasmano.Count > 2 && player.cartasmano[2] is Organos)
             {
                 WriteLine($"(3):"); Nombrar_Carta(player, 2);
             }
@@ -120,17 +125,17 @@ public class Mesa
         string input = ReadLine();
         switch (input)
         {
-            case "1" when player.cartasmano[0] is Organos organo:
+            case "1" when player.cartasmano[0] is Organos:
             {
                 if( player.poner_organos(0) ){return true;}
                 return false;
             }
-            case "2" when player.cartasmano[1] is Organos aorgano:
+            case "2" when player.cartasmano[1] is Organos:
             {
                 if( player.poner_organos(1) ){return true;}
                 return false;
             }
-            case "3" when player.cartasmano[2] is Organos borgano:
+            case "3" when player.cartasmano[2] is Organos:
             {
                 if( player.poner_organos(2) ){return true;}
                 return false;
@@ -169,49 +174,7 @@ public class Mesa
 
         return false;
     }
-    //Acciones Enemigo
-    private void ETurno(Enemy enemy, Mazo mazo)
-    {
-        while (true)
-        {
-            int rnd = new Random().Next(0, 4);
-            if (rnd == 0 && enemy.cartasmano.Count < 3){mazo.ECogerCarta(enemy);break;}
-            if (rnd == 1){if (EUsarBacteria()){break;}}
-            if (rnd == 2){if (EUsarCura()){break;}}
-            if (rnd == 3){if (EUsarOrgano(enemy)){break;}}
-            //if(rnd == 4){if(EDescartar(enemy){break;})}
-        }
-    }
-
-    private bool EDescartar(List<Coleccion.Cartas> cartas ,Mazo mazo, Enemy e)
-    {
-        throw new NotImplementedException();
-    }
-
-    private bool EUsarBacteria()
-    {
-        throw new NotImplementedException();
-    }
-
-    private bool EUsarCura()
-    {
-        throw new NotImplementedException();
-    }
-
-    private bool EUsarOrgano(Enemy e)
-    {
-        int i = 0;
-        foreach (var cart in e.cartasmano)
-        {
-            if (e.cartasmano[i] is Organos xorgano)
-            {
-                if(e.poner_organos(i)){return true;}
-            }
-            i++;
-        }
-        return false;
-    }
-
+    //Cosas que pueden ser despues quitadas
     private static void Nombrar_Carta(Player player, int i)
     {
         WriteLine($"Carta {i+1}:{player.cartasmano[i].Nombre}");
@@ -269,13 +232,17 @@ public class Mesa
 
     private void MostrarOrganos(Player player)
     {
-        WriteLine("Organos: ");
-        for (int i = 0; i < 4; i++)
+        foreach (Organos org in player.organos)
         {
-            if (player.organos[i] == null)
-                continue;
-
-            WriteLine($"Tipos: {player.organos[i].Type}");
+            if (org == null){continue;}
+            if (org.sano == false)
+            {
+                WriteLine($"|{org.Nombre} {org.Type} esta malo");
+            }
+            if (org.sano == true)
+            {
+                WriteLine($"|{org.Nombre} {org.Type} esta sano");
+            }
         }
     }
 

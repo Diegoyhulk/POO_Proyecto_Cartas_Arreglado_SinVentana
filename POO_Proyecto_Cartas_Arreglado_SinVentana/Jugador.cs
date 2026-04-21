@@ -134,6 +134,12 @@ public class Jugador
         WriteLine("Pulsa enter para continuar");
         ReadLine();
     }
+
+    public void Eliminar_Organo(int i, List<Coleccion.Cartas> cartas)
+    {
+        cartas.Add(organos[i]);
+        organos[i] = null;
+    }
 }
 public class Player : Jugador
 {

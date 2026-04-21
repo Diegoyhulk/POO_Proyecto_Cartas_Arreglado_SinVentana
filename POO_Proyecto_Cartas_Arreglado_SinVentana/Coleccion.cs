@@ -149,31 +149,11 @@ public class Coleccion
     }
 }
 
-public class Organos : Coleccion.Cartas, IInfectable
-{
-    public override string Nombre { get; set; } = "Organo";
-    public bool sano { get; set; } = true;
-    public List<Bacterias> bacterias;
-    public bool Infectar(Player player, int i)
-    {
-        WriteLine("");
-        ReadLine();
-        return false;
-    }
-}
-
 public class Bacterias : Coleccion.Cartas
 {
     public override string Nombre { get; set; } = "Bacteria";
 }
-
 public class Curas : Coleccion.Cartas
 {
     public override string Nombre { get; set; } = "Cura";
-}
-
-public class Especiales : Coleccion.Cartas
-{
-    public override string Nombre { get; set; } = "Especial";
-    public string Uso;
 }
