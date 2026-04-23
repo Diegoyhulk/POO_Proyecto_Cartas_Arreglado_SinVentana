@@ -27,7 +27,7 @@ public class Mesa
              $"(3)Usar carta");
             string input = ReadLine();
             if(input == "1"){if(mazo.CogerCarta(player))break;}
-            if (input == "2" &&  player.cartasmano.Count > 0){if (Descarte(coleccion.cartas,mazo, player)) break;}
+            if (input == "2" &&  player.cartasmano.Count > 0){if (Descarte(coleccion.cartas ,mazo, player)) break;}
             if (input == "3")
             {
                 if(UsarCarta(player, coleccion.cartas)) break;
@@ -38,7 +38,7 @@ public class Mesa
         {
             if (cart is Organos org)
             {
-                if(org.sano)
+                if(org.HP >= 2)
                  orgsal++;
             }
             if (orgsal == 4)
@@ -54,7 +54,7 @@ public class Mesa
         turnos++;
     }
     //Acciones Player
-    private bool UsarCarta(Player player,List<Coleccion.Cartas> cartas)
+    private bool UsarCarta(Player player,List<Cartas> cartas)
     {
         WriteLine("Que carta quieres usar?\n" +
                       "(1)Bacteria\n" +
@@ -68,7 +68,7 @@ public class Mesa
                 if(UsarBacteria(player, cartas )){return true;}
                 return false;
             case "2":
-                if(UsarCura(player)){return true;}
+                if(UsarCura(player, cartas)){return true;}
                 return false;
             case "3":
                 if(UsarOrgano(player)){return true;}
@@ -78,14 +78,127 @@ public class Mesa
                 return false;
         }
     }
-    private bool UsarBacteria(Player player, List<Coleccion.Cartas> cartas)
+    private bool UsarBacteria(Player player, List<Cartas> cartas)
     {
-        if(iinf.Infectar(player,cartas)){return true;}
+        bool hascard = false;
+        foreach (var c in player.cartasmano)
+        {
+            if (c is Bacterias)
+            {
+                hascard = true;
+                break;
+            }
+        }
+        if (hascard)
+        {
+            WriteLine("Que bacteria quieres usar?");
+            if (player.cartasmano.Count > 0 && player.cartasmano[0] is Bacterias)
+            {
+                WriteLine($"(1):"); Nombrar_Carta(player, 0);
+            }
+            if (player.cartasmano.Count > 1 && player.cartasmano[1] is Bacterias)
+            {
+                WriteLine($"(2):"); Nombrar_Carta(player, 1);
+            }
+            if (player.cartasmano.Count > 2 && player.cartasmano[2] is Bacterias)
+            {
+                WriteLine($"(3):"); Nombrar_Carta(player, 2);
+            }
+            WriteLine("(Enter)Atras");
+        }
+        else
+        {
+            WriteLine("No tienes bacterias!");
+            WriteLine("Pulsa enter para continuar");
+            ReadLine();
+            return false;
+        }
+        string input = ReadLine();
+        switch (input)
+        {
+            case "1" when player.cartasmano[0] is Bacterias:
+            {
+                if(iinf.Infectar(player, cartas, 0)){return true;}
+                break;
+            }
+            case "2" when player.cartasmano[1] is Bacterias:
+            {
+                if(iinf.Infectar(player, cartas, 1)){return true;}
+                break;
+            }
+            case "3" when player.cartasmano[2] is Bacterias:
+            {
+                if(iinf.Infectar(player, cartas, 2)){return true;}
+                break;
+            }
+            default:
+                    WriteLine("input no valido");
+                    WriteLine("Pulsa enter para continuar");
+                    ReadLine();
+                    break;
+        }
         return false;
     }
-    private bool UsarCura(Player player)
+    private bool UsarCura(Player player, List<Cartas> cartas)
     {
-        throw new NotImplementedException();
+        bool hascard = false;
+        foreach (var c in player.cartasmano)
+        {
+            if (c is Curas)
+            {
+                hascard = true;
+                break;
+            }
+        }
+        if (hascard)
+        {
+            WriteLine("Que bacteria quieres usar?");
+            if (player.cartasmano.Count > 0 && player.cartasmano[0] is Curas)
+            {
+                WriteLine($"(1):"); Nombrar_Carta(player, 0);
+            }
+            if (player.cartasmano.Count > 1 && player.cartasmano[1] is Curas)
+            {
+                WriteLine($"(2):"); Nombrar_Carta(player, 1);
+            }
+            if (player.cartasmano.Count > 2 && player.cartasmano[2] is Curas)
+            {
+                WriteLine($"(3):"); Nombrar_Carta(player, 2);
+            }
+            WriteLine("(Enter)Atras");
+        }
+        else
+        {
+            WriteLine("No tienes bacterias!");
+            WriteLine("Pulsa enter para continuar");
+            ReadLine();
+            return false;
+        }
+        string input = ReadLine();
+        switch (input)
+        {
+            case "1" when player.cartasmano[0] is Curas:
+            {
+                if(iinf.Curar(player, cartas, 0)){return true;}
+                break;
+            }
+            case "2" when player.cartasmano[1] is Curas:
+            {
+                if(iinf.Curar(player, cartas, 1)){return true;}
+                break;
+            }
+            case "3" when player.cartasmano[2] is Curas:
+            {
+                if(iinf.Curar(player, cartas, 2)){return true;}
+                break;
+            }
+            default:
+                    WriteLine("input no valido");
+                    WriteLine("Pulsa enter para continuar");
+                    ReadLine();
+                    break;
+        }
+        return false;
     }
     private bool UsarOrgano(Player player)
     {
@@ -145,7 +258,7 @@ public class Mesa
                 return false;
         }
     }
-    private static bool Descarte(List<Coleccion.Cartas> cartas ,Mazo mazo, Player player)
+    private static bool Descarte(List<Cartas> cartas ,Mazo mazo, Player player)
     {
         WriteLine("Que carta quieres descartar?");
         if (player.cartasmano.Count > 0){Nombrar_Carta(player, 0);}
@@ -235,13 +348,21 @@ public class Mesa
         foreach (Organos org in player.organos)
         {
             if (org == null){continue;}
-            if (org.sano == false)
+            if (org.HP < 2)
             {
                 WriteLine($"|{org.Nombre} {org.Type} esta malo");
             }
-            if (org.sano == true)
+            if (org.HP == 2)
             {
                 WriteLine($"|{org.Nombre} {org.Type} esta sano");
+            }
+            if (org.HP == 3)
+            {
+                WriteLine($"|{org.Nombre} {org.Type} esta sano con un antibiótico");
+            }
+            if (org.HP == 4)
+            {
+                WriteLine($"|{org.Nombre} {org.Type} esta inmunizado!");
             }
         }
     }

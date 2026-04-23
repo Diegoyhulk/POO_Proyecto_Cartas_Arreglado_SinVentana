@@ -5,14 +5,6 @@ using static System.Console;
 public class Coleccion
 {
     public List<Cartas> cartas { get; set; } = new List<Cartas>();
-    public abstract class Cartas
-    {
-        public abstract string Nombre { get; set; }
-        public string Type;
-    }
-
-    
-    
     public void GenerarMazo()
     {
         for (int i = 1; i <= 21; i++)
@@ -147,13 +139,4 @@ public class Coleccion
             }
         }
     }
-}
-
-public class Bacterias : Coleccion.Cartas
-{
-    public override string Nombre { get; set; } = "Bacteria";
-}
-public class Curas : Coleccion.Cartas
-{
-    public override string Nombre { get; set; } = "Cura";
 }

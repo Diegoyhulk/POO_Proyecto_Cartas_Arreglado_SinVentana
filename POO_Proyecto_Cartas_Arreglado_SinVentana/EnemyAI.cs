@@ -14,7 +14,7 @@ public class EnemyAI
             //if(rnd == 4){if(EDescartar(enemy){break;})}
         }
     }
-    private bool EDescartar(List<Coleccion.Cartas> cartas ,Mazo mazo, Enemy e)
+    private bool EDescartar(List<Cartas> cartas ,Mazo mazo, Enemy e)
     {
         throw new NotImplementedException();
     }

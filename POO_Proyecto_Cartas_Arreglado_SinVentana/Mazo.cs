@@ -5,10 +5,10 @@ using static System.Console;
 
 public class Mazo
 {
-    public Queue<Coleccion.Cartas> coleccion = new Queue<Coleccion.Cartas>();
+    public Queue<Cartas> coleccion = new Queue<Cartas>();
     public int CantidadMazo => coleccion.Count;
 
-    public void Shuffle(List<Coleccion.Cartas> cartas)
+    public void Shuffle(List<Cartas> cartas)
     {
         while (cartas.Count > 0)
         {
@@ -19,7 +19,7 @@ public class Mazo
     }
     public void LLamarCartas()
     {
-        foreach (Coleccion.Cartas carta in coleccion)
+        foreach (Cartas carta in coleccion)
         {
             WriteLine(carta.Nombre);
             if (carta.Type != null)
@@ -52,7 +52,7 @@ public class Mazo
             p.cartasmano.Add(coleccion.Dequeue());
         }
     }
-    public void DescartarCarta(List<Coleccion.Cartas> cartas,Jugador p, int i)
+    public void DescartarCarta(List<Cartas> cartas,Jugador p, int i)
     {
         WriteLine($"Carta eliminada: {p.cartasmano[i].Nombre}");
         cartas.Add(p.cartasmano[i]);

@@ -15,13 +15,11 @@ class Program
         mazo.Shuffle(coleccion.cartas);
         mazo.CartasIniciales(player);
         mazo.CartasIniciales(enemy);
-        org.EliminarOrgano += player.Eliminar_Organo;
         while (true)
         {
             mesa.Turno(ref coleccion,ref mazo,ref player,ref enemy, ref win);
             if(win){break;}
         }
-        org.EliminarOrgano -= player.Eliminar_Organo;
         WriteLine("Tienes todos los organos sanos y ganas!");
     }
 }

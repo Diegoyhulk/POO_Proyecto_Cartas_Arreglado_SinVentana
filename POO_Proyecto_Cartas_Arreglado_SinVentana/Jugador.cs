@@ -5,8 +5,8 @@ using static System.Console;
 
 public class Jugador
 {
-    public List<Coleccion.Cartas> cartasmano = new List<Coleccion.Cartas>();
-    public Coleccion.Cartas[] organos = new Organos[4];
+    public List<Cartas> cartasmano = new List<Cartas>();
+    public Cartas[] organos = new Organos[4];
     public bool poner_organos(int i)
     {
         if (cartasmano[i] is Organos organo)
@@ -117,7 +117,7 @@ public class Jugador
         }
         return false;
     }
-    private static void Nombrar_Organo(Coleccion.Cartas organo, int i)
+    private static void Nombrar_Organo(Cartas organo, int i)
     {
         WriteLine($"Espacio {i}:{organo.Nombre}");
         WriteLine($"| tipo:{organo.Type}");
@@ -133,12 +133,6 @@ public class Jugador
         WriteLine("input no valido");
         WriteLine("Pulsa enter para continuar");
         ReadLine();
-    }
-
-    public void Eliminar_Organo(int i, List<Coleccion.Cartas> cartas)
-    {
-        cartas.Add(organos[i]);
-        organos[i] = null;
     }
 }
 public class Player : Jugador

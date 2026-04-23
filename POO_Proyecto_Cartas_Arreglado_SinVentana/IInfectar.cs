@@ -2,5 +2,6 @@
 
 public interface IInfectable
 {
-    public bool Infectar(Player player,List<Coleccion.Cartas> cartas);
+    public bool Infectar(Player player,List<Cartas> cartas, int id);
+    public bool Curar(Player player,List<Cartas> cartas, int id);
 }
