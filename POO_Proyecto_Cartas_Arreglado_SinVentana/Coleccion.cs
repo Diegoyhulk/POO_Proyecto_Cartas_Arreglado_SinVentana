@@ -14,31 +14,31 @@ public class Coleccion
                 case <= 5:
                     cartas.Add(new Organos
                     {
-                        Type = "Sanguíneo"
+                        Tipo = Cartas.Type.Sanguíneo
                     });
                     break;
                 case <= 10 and >5:
                     cartas.Add(new Organos
                     {
-                        Type = "Ósseo"
+                        Tipo = Cartas.Type.Ósseo
                     });
                     break;
                 case <= 15 and > 10:
                     cartas.Add(new Organos
                     {
-                        Type = "Neuronal"
+                        Tipo = Cartas.Type.Neuronal
                     });
                     break;
                 case <= 20 and >15:
                     cartas.Add(new Organos
                     {
-                        Type = "Gástrico"
+                        Tipo = Cartas.Type.Gástrico
                     });
                     break;
                 case <= 21 and >20:
                     cartas.Add(new Organos
                     {
-                        Type = "Comodín"
+                        Tipo = Cartas.Type.Comodín
                     });
                     break;
             }
@@ -50,31 +50,31 @@ public class Coleccion
                 case <= 4:
                     cartas.Add(new Bacterias
                     {
-                        Type = "Sanguíneo"
+                        Tipo = Cartas.Type.Sanguíneo
                     });
                     break;
                 case <= 8 and >4:
                     cartas.Add(new Bacterias
                     {
-                        Type = "Ósseo"
+                        Tipo = Cartas.Type.Ósseo
                     });
                     break;
                 case <= 12 and > 8:
                     cartas.Add(new Bacterias
                     {
-                        Type = "Neuronal"
+                        Tipo = Cartas.Type.Neuronal
                     });
                     break;
                 case <= 16 and >12:
                     cartas.Add(new Bacterias
                     {
-                        Type = "Gástrico"
+                        Tipo = Cartas.Type.Gástrico
                     });
                     break;
                 case <= 17 and >16:
                     cartas.Add(new Bacterias
                     {
-                        Type = "Comodín"
+                        Tipo = Cartas.Type.Comodín
                     });
                     break;
             }
@@ -86,31 +86,31 @@ public class Coleccion
                 case <= 4:
                     cartas.Add(new Curas
                     {
-                        Type = "Sanguíneo"
+                        Tipo = Cartas.Type.Sanguíneo
                     });
                     break;
                 case <= 8 and >4:
                     cartas.Add(new Curas
                     {
-                        Type = "Ósseo"
+                        Tipo = Cartas.Type.Ósseo
                     });
                     break;
                 case <= 12 and > 8:
                     cartas.Add(new Curas
                     {
-                        Type = "Neuronal"
+                        Tipo = Cartas.Type.Neuronal
                     });
                     break;
                 case <= 16 and >12:
                     cartas.Add(new Curas
                     {
-                        Type = "Gástrico"
+                        Tipo = Cartas.Type.Gástrico
                     });
                     break;
                 case <= 20 and >16:
                     cartas.Add(new Curas
                     {
-                        Type = "Comodín"
+                        Tipo = Cartas.Type.Comodín
                     });
                     break;
             }
@@ -119,23 +119,23 @@ public class Coleccion
         {
             if (i <= 2)
             {
-                cartas.Add(new Especiales{Uso ="Robo"});
+                cartas.Add(new Especiales{uso = Especiales.Uso.Robo});
             }
             if (i is <= 4 and >2)
             {
-                cartas.Add(new Especiales{Uso ="Descarte"});
+                cartas.Add(new Especiales{uso = Especiales.Uso.Descarte});
             }
             if (i is <= 6 and >4)
             {
-                cartas.Add(new Especiales{Uso ="Transplante"});
+                cartas.Add(new Especiales{uso = Especiales.Uso.Transplante});
             }
             if (i is <= 8 and >6)
             {
-                cartas.Add(new Especiales{Uso ="Error"});
+                cartas.Add(new Especiales{uso =Especiales.Uso.Error});
             }
             if (i is <= 10 and >8)
             {
-                cartas.Add(new Especiales{Uso ="Contagio"});
+                cartas.Add(new Especiales{uso =Especiales.Uso.Contagio});
             }
         }
     }

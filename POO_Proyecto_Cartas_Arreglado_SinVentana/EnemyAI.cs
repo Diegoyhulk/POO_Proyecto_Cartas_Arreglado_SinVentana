@@ -1,42 +1,179 @@
 ﻿namespace POO_Proyecto_Cartas_Arreglado_SinVentana;
 
+using static System.Console;
 public class EnemyAI
 {
-    public void ETurno(Enemy enemy, Mazo mazo)
+    bool usadocarta;
+    public IInfectable iinf = new Organos();
+    public void ETurno(Enemy enemy, Mazo mazo, List<Cartas> cartas, Player player)
     {
+        int rnd = Random.Shared.Next(0, 2);
         while (true)
         {
-            int rnd = new Random().Next(0, 4);
-            if (rnd == 0 && enemy.cartasmano.Count < 3){mazo.ECogerCarta(enemy);break;}
-            if (rnd == 1){if (EUsarBacteria()){break;}}
-            if (rnd == 2){if (EUsarCura()){break;}}
-            if (rnd == 3){if (EUsarOrgano(enemy)){break;}}
-            //if(rnd == 4){if(EDescartar(enemy){break;})}
+            if (rnd == 0) //Attack mode
+            {
+                if (EUsarBacteria(enemy,player,mazo,cartas)){break;}
+                else if (EUsarEspecial(enemy,cartas,mazo)){break;}
+                else if (EUsarCura(enemy,mazo,cartas)){break;}
+                else if (EUsarOrgano(enemy,mazo)){break;}
+                else if (EDescartar(cartas, mazo, enemy))
+                {
+                    WriteLine("He Descartado una carta");
+                    ReadLine();
+                    break;
+                }
+            }
+            else //Defense Mode
+            {
+                if (EUsarCura(enemy,mazo,cartas)){break;}
+                else if (EUsarOrgano(enemy,mazo)){break;}
+                else if (EUsarBacteria(enemy,player,mazo,cartas)){break;}
+                else if (EUsarEspecial(enemy,cartas,mazo)){break;}
+                else if (EDescartar(cartas, mazo, enemy))
+                {
+                    WriteLine("He Descartado una carta");
+                    ReadLine();
+                    break;
+                }
+            }
         }
     }
+
     private bool EDescartar(List<Cartas> cartas ,Mazo mazo, Enemy e)
     {
-        throw new NotImplementedException();
+        int i = 0;
+        foreach (Cartas carta in e.cartasmano)
+        {
+            if (carta is Bacterias)
+            {
+                mazo.DescartarCarta(cartas,e,i); 
+                mazo.CogerCarta(e);
+                return true;
+            }
+            i++;
+        }
+        i = 0;
+        foreach (Cartas carta in e.cartasmano)
+        {
+            if (carta is Curas)
+            {
+                mazo.DescartarCarta(cartas,e,i); 
+                mazo.CogerCarta(e);
+                return true;
+            }
+            i++;
+        }
+        i = 0;
+        foreach (Cartas carta in e.cartasmano)
+        {
+            if (carta is Organos)
+            {
+                mazo.DescartarCarta(cartas,e,i);
+                mazo.CogerCarta(e);
+                return true;
+            }
+            i++;
+        }
+        i = 0;
+        foreach (Cartas carta in e.cartasmano)
+        {
+            if (carta is Especiales)
+            {
+                mazo.DescartarCarta(cartas,e,i); 
+                mazo.CogerCarta(e);
+                return true;
+            }
+            i++;
+        }
+        i = 0;
+        return true;
     }
 
-    private bool EUsarBacteria()
+    private bool EUsarBacteria(Enemy e,Player player,Mazo mazo, List<Cartas> cartas)
     {
-        throw new NotImplementedException();
+        int i = 0;
+        foreach (Organos org in e.organos)
+        {
+            if (org != null)
+            {
+                foreach (Cartas bact in e.cartasmano)
+                {
+                    if (bact is not Bacterias){i++;continue;}
+
+                    if (iinf.Infectar(e, player, cartas, i))
+                    {
+                        WriteLine("He usado una Bacteria");
+                        ReadLine();
+                        mazo.CogerCarta(e);
+                        return true;
+                    }
+                    i++;
+                }
+                return false;
+            }
+            
+        }
+        return false;
     }
 
-    private bool EUsarCura()
+    private bool EUsarCura(Enemy e,Mazo mazo, List<Cartas> cartas)
     {
-        throw new NotImplementedException();
+        int i = 0;
+        foreach (Organos org in e.organos)
+        {
+            if (org != null)
+            {
+                foreach (Cartas cura in e.cartasmano)
+                {
+                    if (cura is not Curas){i++;continue;}
+                    if (iinf.Curar(e, cartas, i))
+                    {
+                        WriteLine("He usado una Cura");
+                        ReadLine();
+                        mazo.CogerCarta(e);
+                        return true;
+                    }
+                    i++;
+                }
+            }
+            
+        }
+        return false;
     }
-
-    private bool EUsarOrgano(Enemy e)
+    private bool EUsarEspecial(Enemy enemy,List<Cartas> cartas, Mazo mazo)
+    {
+        
+        int i = 0;
+        foreach (var cart in enemy.cartasmano)
+        {
+            if (enemy.cartasmano[i] is Especiales)
+            {
+                WriteLine("He usado una carta especial");
+                ReadLine();
+                mazo.DescartarCarta(cartas,enemy,i);
+                mazo.CogerCarta(enemy);
+                return true;
+            }
+            i++;
+        }
+        
+        return false;
+    }
+    private bool EUsarOrgano(Enemy e, Mazo mazo)
     {
         int i = 0;
         foreach (var cart in e.cartasmano)
         {
             if (e.cartasmano[i] is Organos)
             {
-                if(e.poner_organos(i)){return true;}
+                if (e.poner_organos(i, e))
+                {
+                    WriteLine("He puesto un Organo");
+                    ReadLine();
+                    mazo.CogerCarta(e);
+                    return true;
+                }
+                return false;
             }
             i++;
         }

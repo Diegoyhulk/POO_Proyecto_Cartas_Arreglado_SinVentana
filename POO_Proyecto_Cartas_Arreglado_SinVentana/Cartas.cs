@@ -2,8 +2,16 @@
 
 public abstract class Cartas
 {
-    public abstract string Nombre { get; set; }
-    public string Type;
+    public virtual string Nombre { get; set; }
+    public enum Type
+    {
+        Sanguíneo,
+        Gástrico,
+        Ósseo,
+        Neuronal,
+        Comodín
+    }
+    public Type Tipo { get; set; }
 }
 public class Curas : Cartas
 {

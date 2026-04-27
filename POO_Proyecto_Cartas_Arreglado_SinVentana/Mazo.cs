@@ -22,26 +22,48 @@ public class Mazo
         foreach (Cartas carta in coleccion)
         {
             WriteLine(carta.Nombre);
-            if (carta.Type != null)
+            switch (carta)
             {
-                WriteLine(carta.Type);
-            }
-            if (carta is Especiales esp)
-            {
-                WriteLine(esp.Uso);
+                case Organos o:
+                    WriteLine(o.Tipo);
+                    break;
+
+                case Bacterias b:
+                    WriteLine(b.Tipo);
+                    break;
+
+                case Curas c:
+                    WriteLine(c.Tipo);
+                    break;
+
+                case Especiales e:
+                    WriteLine(e.uso);
+                    break;
             }
         }
     }
     public bool CogerCarta(Jugador p)
     {
-        if (p.cartasmano.Count == 3){WriteLine("Tienes no puedes coger más!");
-            WriteLine("Pulsa cualquier tecla para continuar");
-            ReadLine(); return false;}
-        WriteLine($"Has cogido la carta{coleccion.Peek().Nombre}");
-        p.cartasmano.Add(coleccion.Dequeue());
-        WriteLine($"Pulsa cualquier tecla para continuar");
-        ReadLine();
-        return true;
+        if (p is Player)
+        {
+            if (p.cartasmano.Count == 3){WriteLine("Tienes no puedes coger más!");
+                WriteLine("Pulsa cualquier tecla para continuar");
+                ReadLine(); return false;}
+            WriteLine($"Has cogido la carta{coleccion.Peek().Nombre}");
+            p.cartasmano.Add(coleccion.Dequeue());
+            WriteLine($"Pulsa cualquier tecla para continuar");
+            ReadLine();
+            return true;
+        }
+        else
+        {
+            if (p.cartasmano.Count == 3)
+            {
+                return false;
+            }
+            p.cartasmano.Add(coleccion.Dequeue());
+            return true;
+        }
     }
 
     public void CartasIniciales(Jugador p)
@@ -54,15 +76,19 @@ public class Mazo
     }
     public void DescartarCarta(List<Cartas> cartas,Jugador p, int i)
     {
-        WriteLine($"Carta eliminada: {p.cartasmano[i].Nombre}");
-        cartas.Add(p.cartasmano[i]);
-        p.cartasmano.Remove(p.cartasmano[i]);
-        WriteLine("Pulsa cualquier tecla para continuar");
-        ReadLine();
-    }
-
-    public void ECogerCarta(Enemy e)
-    {
-        e.cartasmano.Add(coleccion.Dequeue());
+        if (p is Player)
+        {
+            WriteLine($"Carta eliminada: {p.cartasmano[i].Nombre}");
+            cartas.Add(p.cartasmano[i]);
+            p.cartasmano.Remove(p.cartasmano[i]);
+            WriteLine("Pulsa cualquier tecla para continuar");
+            ReadLine();
+        }
+        else
+        {
+            cartas.Add(p.cartasmano[i]);
+            p.cartasmano.Remove(p.cartasmano[i]);
+        }
+        
     }
 }

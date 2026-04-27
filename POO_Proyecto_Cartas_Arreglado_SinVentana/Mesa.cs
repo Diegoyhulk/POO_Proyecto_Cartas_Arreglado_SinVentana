@@ -1,15 +1,18 @@
-﻿namespace POO_Proyecto_Cartas_Arreglado_SinVentana;
+﻿using System.Drawing;
+
+namespace POO_Proyecto_Cartas_Arreglado_SinVentana;
 using static System.Console;
 
 public class Mesa
 {
-    int orgsal = 0;
+    private int orgsal = 0;
+    private int eorgsal = 0;
     public IInfectable iinf = new Organos();
     private EnemyAI eai = new EnemyAI();
     public int turnos { get; set; }
-    public void Turno(ref Coleccion coleccion,ref Mazo mazo,ref Player player,ref Enemy enemy, ref bool win)
+    public void Turno(ref Coleccion coleccion,ref Mazo mazo,ref Player player,ref Enemy enemy,ref EnemyAI ai, ref bool win, ref bool lose)
     {
-        orgsal = 0;
+        
         if (mazo.coleccion.Count == 0)
         {
             mazo.Shuffle(coleccion.cartas);
@@ -18,43 +21,64 @@ public class Mesa
         while (true)
         {
             mazo.LLamarCartas();
+            MostrarManoEnemiga(enemy);
+            MostrarOrganosEnemigo(enemy);
             WriteLine($"{mazo.CantidadMazo} cartas");
             Write($"Turno: {turnos}\n");
             MostrarOrganos(player);
             MostrarMano(player);
-            Write($"(1)CogerCarta\n" +
-             $"(2)Descartar carta\n" +
-             $"(3)Usar carta");
+            Write($"(1)Descartar carta\n" +
+             $"(2)Usar carta");
             string input = ReadLine();
-            if(input == "1"){if(mazo.CogerCarta(player))break;}
-            if (input == "2" &&  player.cartasmano.Count > 0){if (Descarte(coleccion.cartas ,mazo, player)) break;}
-            if (input == "3")
+            if (input == "1" &&  player.cartasmano.Count > 0){if (Descarte(coleccion.cartas ,mazo, player)) break;}
+            if (input == "2")
             {
-                if(UsarCarta(player, coleccion.cartas)) break;
+                if(UsarCarta(player,enemy, coleccion.cartas, mazo)) break;
             }
             else{InputNotValid();}
         }
-        foreach (var cart in  player.organos)
+        //Turno Enemigo
+        ForegroundColor = ConsoleColor.Red;
+        ai.ETurno(enemy,mazo,coleccion.cartas,player);
+        ForegroundColor = ConsoleColor.Gray;
+        //Acaba el turno
+        ComprobarOrganosSaludables(player,enemy,ref win,ref lose);
+        turnos++;
+    }
+
+    private void ComprobarOrganosSaludables(Player player,Enemy enemy,ref bool win, ref bool lose)
+    {
+        orgsal = 0;
+        eorgsal = 0;
+        foreach (Cartas cart in  player.organos)
         {
             if (cart is Organos org)
             {
                 if(org.HP >= 2)
-                 orgsal++;
+                    orgsal++;
             }
             if (orgsal == 4)
             {
                 win = true;
             }
         }
-        //ETurno(enemy, mazo);
-        
-        //Turno Enemigo
-        //eai.ETurno(enemy, mazo);
-        //Acaba el turno
-        turnos++;
+        foreach (Cartas cart in  enemy.organos)
+        {
+            if (cart is Organos org)
+            {
+                if(org.HP >= 2)
+                    eorgsal += 1;
+            }
+            if (eorgsal == 4)
+            {
+                lose = true;
+            }
+        }
     }
+
+    /// /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //Acciones Player
-    private bool UsarCarta(Player player,List<Cartas> cartas)
+    private bool UsarCarta(Player player,Enemy enemy,List<Cartas> cartas, Mazo mazo)
     {
         WriteLine("Que carta quieres usar?\n" +
                       "(1)Bacteria\n" +
@@ -65,20 +89,20 @@ public class Mesa
         switch (input)
         {
             case "1":
-                if(UsarBacteria(player, cartas )){return true;}
+                if(UsarBacteria(player,enemy, cartas,mazo )){return true;}
                 return false;
             case "2":
-                if(UsarCura(player, cartas)){return true;}
+                if(UsarCura(player,enemy, cartas,mazo)){return true;}
                 return false;
             case "3":
-                if(UsarOrgano(player)){return true;}
+                if(UsarOrgano(player,mazo)){return true;}
                 return false;
             default:
                 InputNotValid();
                 return false;
         }
     }
-    private bool UsarBacteria(Player player, List<Cartas> cartas)
+    private bool UsarBacteria(Player player,Enemy enemy, List<Cartas> cartas, Mazo mazo)
     {
         bool hascard = false;
         foreach (var c in player.cartasmano)
@@ -118,17 +142,17 @@ public class Mesa
         {
             case "1" when player.cartasmano[0] is Bacterias:
             {
-                if(iinf.Infectar(player, cartas, 0)){return true;}
+                if (iinf.Infectar(player, enemy, cartas, 0)){mazo.CogerCarta(player);return true;}
                 break;
             }
             case "2" when player.cartasmano[1] is Bacterias:
             {
-                if(iinf.Infectar(player, cartas, 1)){return true;}
+                if (iinf.Infectar(player, enemy, cartas, 1)){mazo.CogerCarta(player);return true;}
                 break;
             }
             case "3" when player.cartasmano[2] is Bacterias:
             {
-                if(iinf.Infectar(player, cartas, 2)){return true;}
+                if(iinf.Infectar(player,enemy, cartas, 2)){mazo.CogerCarta(player);return true;}
                 break;
             }
             default:
@@ -139,7 +163,7 @@ public class Mesa
         }
         return false;
     }
-    private bool UsarCura(Player player, List<Cartas> cartas)
+    private bool UsarCura(Player player,Enemy enemy, List<Cartas> cartas,Mazo mazo)
     {
         bool hascard = false;
         foreach (var c in player.cartasmano)
@@ -152,7 +176,7 @@ public class Mesa
         }
         if (hascard)
         {
-            WriteLine("Que bacteria quieres usar?");
+            WriteLine("Que Cura quieres usar?");
             if (player.cartasmano.Count > 0 && player.cartasmano[0] is Curas)
             {
                 WriteLine($"(1):"); Nombrar_Carta(player, 0);
@@ -179,17 +203,17 @@ public class Mesa
         {
             case "1" when player.cartasmano[0] is Curas:
             {
-                if(iinf.Curar(player, cartas, 0)){return true;}
+                if(iinf.Curar(player, cartas, 0)){mazo.CogerCarta(player);return true;}
                 break;
             }
             case "2" when player.cartasmano[1] is Curas:
             {
-                if(iinf.Curar(player, cartas, 1)){return true;}
+                if(iinf.Curar(player, cartas, 1)){mazo.CogerCarta(player);return true;}
                 break;
             }
             case "3" when player.cartasmano[2] is Curas:
             {
-                if(iinf.Curar(player, cartas, 2)){return true;}
+                if(iinf.Curar(player, cartas, 2)){mazo.CogerCarta(player);return true;}
                 break;
             }
             default:
@@ -200,7 +224,7 @@ public class Mesa
         }
         return false;
     }
-    private bool UsarOrgano(Player player)
+    private bool UsarOrgano(Player player,Mazo mazo)
     {
         bool hascard = false;
         foreach (var c in player.cartasmano)
@@ -240,17 +264,17 @@ public class Mesa
         {
             case "1" when player.cartasmano[0] is Organos:
             {
-                if( player.poner_organos(0) ){return true;}
+                if( player.poner_organos(0,player) ){mazo.CogerCarta(player);return true;}
                 return false;
             }
             case "2" when player.cartasmano[1] is Organos:
             {
-                if( player.poner_organos(1) ){return true;}
+                if( player.poner_organos(1,player) ){mazo.CogerCarta(player);return true;}
                 return false;
             }
             case "3" when player.cartasmano[2] is Organos:
             {
-                if( player.poner_organos(2) ){return true;}
+                if( player.poner_organos(2,player) ){mazo.CogerCarta(player);return true;}
                 return false;
             }
             default:
@@ -269,17 +293,20 @@ public class Mesa
         if (input1 == "1")
         {
             mazo.DescartarCarta(cartas,player, 0);
+            mazo.CogerCarta(player);
             return true;
         }
         if (input1 == "2" && player.cartasmano.Count > 1)
         {
             mazo.DescartarCarta(cartas,player, 1);
+            mazo.CogerCarta(player);
             return true;
         }
 
         if (input1 == "3" && player.cartasmano.Count > 2)
         {
             mazo.DescartarCarta(cartas, player, 2);
+            mazo.CogerCarta(player);
             return true;
         }
         else
@@ -293,11 +320,11 @@ public class Mesa
         WriteLine($"Carta {i+1}:{player.cartasmano[i].Nombre}");
         if (player.cartasmano[i].Nombre != "Especial")
         {
-            WriteLine($"| tipo:{player.cartasmano[i].Type}");
+            WriteLine($"| tipo:{player.cartasmano[i].Tipo}");
         }
         if (player.cartasmano[i] is Especiales esp)
         {
-            WriteLine($"| uso:{esp.Uso}");
+            WriteLine($"| uso:{esp.uso}");
         }
     }
 
@@ -308,36 +335,36 @@ public class Mesa
         {
             if (player.cartasmano[0] is Especiales esp)
             {
-                WriteLine($"{player.cartasmano[0].Nombre} | {esp.Uso}");
+                WriteLine($"{player.cartasmano[0].Nombre} | {esp.uso}");
             }
             else
             {
-                WriteLine($"{player.cartasmano[0].Nombre} | {player.cartasmano[0].Type}");
+                WriteLine($"{player.cartasmano[0].Nombre} | {player.cartasmano[0].Tipo}");
             }
         }
         if (player.cartasmano.Count > 1)
         {
             if (player.cartasmano[1] is Especiales esp)
             {
-                WriteLine($"{player.cartasmano[1].Nombre} | {esp.Uso}");
+                WriteLine($"{player.cartasmano[1].Nombre} | {esp.uso}");
             }
             else
             {
-                WriteLine($"{player.cartasmano[1].Nombre} | {player.cartasmano[1].Type}");
+                WriteLine($"{player.cartasmano[1].Nombre} | {player.cartasmano[1].Tipo}");
             }
         }
         if (player.cartasmano.Count > 2)
         {
             if (player.cartasmano[2] is Especiales esp)
             {
-                WriteLine($"{player.cartasmano[2].Nombre} | {esp.Uso}");
+                WriteLine($"{player.cartasmano[2].Nombre} | {esp.uso}");
             }
             else
             {
-                WriteLine($"{player.cartasmano[2].Nombre} | {player.cartasmano[2].Type}");
+                WriteLine($"{player.cartasmano[2].Nombre} | {player.cartasmano[2].Tipo}");
             }
         }
-        else
+        else if(player.cartasmano.Count < 1)
         {
             WriteLine("No tienes cartas\n");
         }
@@ -350,21 +377,90 @@ public class Mesa
             if (org == null){continue;}
             if (org.HP < 2)
             {
-                WriteLine($"|{org.Nombre} {org.Type} esta malo");
+                WriteLine($"|{org.Nombre} {org.Tipo} esta malo");
             }
             if (org.HP == 2)
             {
-                WriteLine($"|{org.Nombre} {org.Type} esta sano");
+                WriteLine($"|{org.Nombre} {org.Tipo} esta sano");
             }
             if (org.HP == 3)
             {
-                WriteLine($"|{org.Nombre} {org.Type} esta sano con un antibiótico");
+                WriteLine($"|{org.Nombre} {org.Tipo} esta sano con un antibiótico");
             }
             if (org.HP == 4)
             {
-                WriteLine($"|{org.Nombre} {org.Type} esta inmunizado!");
+                WriteLine($"|{org.Nombre} {org.Tipo} esta inmunizado!");
             }
         }
+    }
+
+    private void MostrarManoEnemiga(Enemy e)
+    {
+        WriteLine("Cartas del enemigo: ");
+        ForegroundColor = ConsoleColor.Red;
+        if (e.cartasmano.Count > 0)
+        {
+            if (e.cartasmano[0] is Especiales esp)
+            {
+                WriteLine($"{e.cartasmano[0].Nombre} | {esp.uso}");
+            }
+            else
+            {
+                WriteLine($"{e.cartasmano[0].Nombre} | {e.cartasmano[0].Tipo}");
+            }
+        }
+        if (e.cartasmano.Count > 1)
+        {
+            if (e.cartasmano[1] is Especiales esp)
+            {
+                WriteLine($"{e.cartasmano[1].Nombre} | {esp.uso}");
+            }
+            else
+            {
+                WriteLine($"{e.cartasmano[1].Nombre} | {e.cartasmano[1].Tipo}");
+            }
+        }
+        if (e.cartasmano.Count > 2)
+        {
+            if (e.cartasmano[2] is Especiales esp)
+            {
+                WriteLine($"{e.cartasmano[2].Nombre} | {esp.uso}");
+            }
+            else
+            {
+                WriteLine($"{e.cartasmano[2].Nombre} | {e.cartasmano[2].Tipo}");
+            }
+        }
+        else if (e.cartasmano.Count < 1)
+        {
+            WriteLine("No tienes cartas\n");
+        }
+        ForegroundColor = ConsoleColor.Gray;
+    }
+    private void MostrarOrganosEnemigo(Enemy e)
+    {
+        ForegroundColor = ConsoleColor.Red;
+        foreach (Organos org in e.organos)
+        {
+            if (org == null){continue;}
+            if (org.HP < 2)
+            {
+                WriteLine($"|{org.Nombre} {org.Tipo} esta malo");
+            }
+            if (org.HP == 2)
+            {
+                WriteLine($"|{org.Nombre} {org.Tipo} esta sano");
+            }
+            if (org.HP == 3)
+            {
+                WriteLine($"|{org.Nombre} {org.Tipo} esta sano con un antibiótico");
+            }
+            if (org.HP == 4)
+            {
+                WriteLine($"|{org.Nombre} {org.Tipo} esta inmunizado!");
+            }
+        }
+        ForegroundColor = ConsoleColor.Gray;
     }
 
     private static void InputNotValid()

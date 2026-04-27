@@ -3,5 +3,15 @@
 public class Especiales : Cartas
 {
     public override string Nombre { get; set; } = "Especial";
-    public string Uso;
+
+    public enum Uso
+    {
+        Robo,
+        Descarte,
+        Transplante,
+        Error,
+        Contagio
+    }
+    
+    public Uso uso { get; set; }
 }
