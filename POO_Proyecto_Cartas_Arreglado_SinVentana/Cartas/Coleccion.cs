@@ -116,7 +116,7 @@ public class Coleccion
             }
         }
         for (int i = 1; i <= 10; i++)
-        {/*
+        {
             if (i <= 10)
             {
                 cartas.Add(new Especiales{uso = Especiales.Uso.Robo});
@@ -132,8 +132,8 @@ public class Coleccion
             if (i is <= 8 and >6)
             {
                 cartas.Add(new Especiales{uso =Especiales.Uso.Error});
-            }*/
-            if (true)
+            }
+            if (i is <= 10 and > 8)
             {
                 cartas.Add(new Especiales{uso =Especiales.Uso.Contagio});
             }

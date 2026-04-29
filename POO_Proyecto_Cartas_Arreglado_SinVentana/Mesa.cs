@@ -1,19 +1,24 @@
 ﻿using System.Drawing;
+using POO_Proyecto_Cartas_Arreglado_SinVentana.Funciones;
 
 namespace POO_Proyecto_Cartas_Arreglado_SinVentana;
 using static System.Console;
 
 public class Mesa
 {
+    private bool win;
+    private bool lose;
+    private Program program;
     private int orgsal = 0;
     private int eorgsal = 0;
-    private IInfectable iinf = new Organos();
-    private ICurable icur = new Organos();
+    private IInfectable iinf = new Infecta();
+    private ICurable icur = new Cura();
     private EnemyAI eai = new EnemyAI();
+    public event Action<bool,bool> FinalizarPartida;
     public int turnos { get; set; }
-    public void Turno(ref Coleccion coleccion,ref Mazo mazo,ref Player player,ref Enemy enemy,ref EnemyAI ai,ref EspecialesC comando, ref bool win, ref bool lose)
+    public void Turno(ref Coleccion coleccion,ref Mazo mazo,ref Player player,ref Enemy enemy,ref EnemyAI ai,ref EspecialesC comando)
     {
-        
+        Clear();
         if (mazo.coleccion.Count == 0)
         {
             mazo.Shuffle(coleccion.cartas);
@@ -21,7 +26,7 @@ public class Mesa
         //Turno
         while (true)
         {
-            mazo.LLamarCartas();
+           //2mazo.LLamarCartas();
             MostrarManoEnemiga(enemy);
             MostrarOrganosEnemigo(enemy);
             WriteLine($"{mazo.CantidadMazo} cartas");
@@ -37,12 +42,13 @@ public class Mesa
         }
         //Turno Enemigo
         ForegroundColor = ConsoleColor.Red;
-        ai.ETurno(enemy,mazo,coleccion.cartas,player);
+        ai.ETurno(enemy,mazo,coleccion.cartas,player,comando);
         ForegroundColor = ConsoleColor.Gray;
         //Acaba el turno
         ComprobarOrganosSaludables(player,enemy,ref win,ref lose);
         turnos++;
     }
+    
 
     private void ComprobarOrganosSaludables(Player player,Enemy enemy,ref bool win, ref bool lose)
     {
@@ -58,6 +64,7 @@ public class Mesa
             if (orgsal == 4)
             {
                 win = true;
+                FinalizarPartida(win,lose);
             }
         }
         foreach (Cartas cart in  enemy.organos)
@@ -70,6 +77,7 @@ public class Mesa
             if (eorgsal == 4)
             {
                 lose = true;
+                FinalizarPartida(win,lose);
             }
         }
     }
@@ -84,19 +92,19 @@ public class Mesa
                       "(3)Organo\n" +
                       "(4)Especial\n" +
                       "(Enter)Volver");
-        string input = ReadLine();
+        ConsoleKey input = ReadKey(true).Key;
         switch (input)
         {
-            case "1":
+            case ConsoleKey.D1:
                 if(UsarBacteria(player,enemy, cartas,mazo )){return true;}
                 return false;
-            case "2":
+            case ConsoleKey.D2:
                 if(UsarCura(player,enemy, cartas,mazo)){return true;}
                 return false;
-            case "3":
+            case ConsoleKey.D3:
                 if(UsarOrgano(player,mazo)){return true;}
                 return false;
-            case "4":
+            case ConsoleKey.D4:
                 if (UsarCartaEspecial(player, enemy, cartas, mazo,comando)){return true;}
                 return false;
             default:
@@ -140,7 +148,7 @@ public class Mesa
             ReadLine();
             return false;
         }
-        string input = ReadLine();
+        string input = Console.ReadKey().Key.ToString();
         switch (input)
         {
             case "1" when player.cartasmano[0] is Especiales:

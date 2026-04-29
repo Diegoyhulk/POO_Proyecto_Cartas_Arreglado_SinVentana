@@ -25,13 +25,25 @@ public class EContagio
                             e.organos[j] = null;
                             or.HP = 2;
                         }
+                        cartas.Add(p.cartasmano[id]);
+                        p.cartasmano.Remove(p.cartasmano[id]);
+                        mazo.CogerCarta(p);
+                        if (p is Player)
+                        {
+                            WriteLine("No has infectado al enemigo!");
+                        }
+                        return true;
                     }
                     j++;
                 }
             }
             i++;
         }
-        WriteLine("Has infectado todas tus bacterias posibles al enemigo!");
-        return true;
+
+        if (p is Player)
+        {
+            WriteLine("No has podido infectar al enemigo!");
+        }
+        return false;
     }
 }

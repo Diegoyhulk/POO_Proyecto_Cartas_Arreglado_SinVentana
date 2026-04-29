@@ -2,11 +2,10 @@
 using static System.Console;
 class Program
 {
-    private static bool lose = false;
-    private static bool win = false;
+    public static bool end;
     static void Main(string[] args)
     {
-        Organos org = new Organos();
+        Organos organo = new Organos();
         Mazo mazo = new Mazo();
         Player player = new Player();
         Enemy enemy = new Enemy();
@@ -14,24 +13,30 @@ class Program
         Mesa mesa = new Mesa();
         EnemyAI ai = new EnemyAI();
         EspecialesC esp = new EspecialesC();
+        mesa.FinalizarPartida += AcabarPartida;
         coleccion.GenerarMazo();
         mazo.Shuffle(coleccion.cartas);
         mazo.CartasIniciales(player);
         mazo.CartasIniciales(enemy);
         while (true)
         {
-            mesa.Turno(ref coleccion,ref mazo,ref player,ref enemy,ref ai,ref esp, ref win, ref lose);
-            if(win){break;}
-            else if(lose){break;}
+            mesa.Turno(ref coleccion,ref mazo,ref player,ref enemy,ref ai,ref esp);
+            if (end){break;}
         }
+        
+    }
+
+    private static void AcabarPartida(bool win, bool lose)
+    {
         if (win)
         {
             WriteLine("Tienes todos los organos sanos y ganas!");
+            end = true;
         }
         else if (lose)
         {
-            WriteLine("El enemigo todos los organos sanos y pierdes!");
+            WriteLine("El enemigo tiene todos los organos sanos y pierdes!");
+            end = true;
         }
-        
     }
 }

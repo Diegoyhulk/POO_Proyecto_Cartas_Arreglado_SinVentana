@@ -1,12 +1,14 @@
-﻿namespace POO_Proyecto_Cartas_Arreglado_SinVentana;
+﻿using POO_Proyecto_Cartas_Arreglado_SinVentana.Funciones;
+
+namespace POO_Proyecto_Cartas_Arreglado_SinVentana;
 
 using static System.Console;
 public class EnemyAI
 {
     bool usadocarta;
-    public IInfectable iinf = new Organos();
-    public ICurable icur = new Organos();
-    public void ETurno(Enemy enemy, Mazo mazo, List<Cartas> cartas, Player player)
+    public IInfectable iinf = new Infecta();
+    public ICurable icur = new Cura();
+    public void ETurno(Enemy enemy, Mazo mazo, List<Cartas> cartas, Player player, EspecialesC comando)
     {
         int rnd = Random.Shared.Next(0, 2);
         while (true)
@@ -14,7 +16,7 @@ public class EnemyAI
             if (rnd == 0) //Attack mode
             {
                 if (EUsarBacteria(enemy,player,mazo,cartas)){break;}
-                else if (EUsarEspecial(enemy,cartas,mazo)){break;}
+                else if (EUsarEspecial(player,enemy,cartas,mazo,comando)){break;}
                 else if (EUsarCura(enemy,mazo,cartas)){break;}
                 else if (EUsarOrgano(enemy,mazo)){break;}
                 else if (EDescartar(cartas, mazo, enemy))
@@ -29,7 +31,7 @@ public class EnemyAI
                 if (EUsarCura(enemy,mazo,cartas)){break;}
                 else if (EUsarOrgano(enemy,mazo)){break;}
                 else if (EUsarBacteria(enemy,player,mazo,cartas)){break;}
-                else if (EUsarEspecial(enemy,cartas,mazo)){break;}
+                else if (EUsarEspecial(player,enemy,cartas,mazo,comando)){break;}
                 else if (EDescartar(cartas, mazo, enemy))
                 {
                     WriteLine("He Descartado una carta");
@@ -140,21 +142,22 @@ public class EnemyAI
         }
         return false;
     }
-    private bool EUsarEspecial(Enemy enemy,List<Cartas> cartas, Mazo mazo)
+    private bool EUsarEspecial(Player player,Enemy enemy,List<Cartas> cartas, Mazo mazo, EspecialesC comando)
     {
         
-        int i = 0;
+        int id = 0;
         foreach (var cart in enemy.cartasmano)
         {
-            if (enemy.cartasmano[i] is Especiales)
+            if (enemy.cartasmano[id] is Especiales)
             {
-                WriteLine("He usado una carta especial");
+                comando.UsarEspeciales(enemy,player,mazo,cartas,id);
+                WriteLine("He usado una carta Especiales");
                 ReadLine();
-                mazo.DescartarCarta(cartas,enemy,i);
+                mazo.DescartarCarta(cartas,enemy,id);
                 mazo.CogerCarta(enemy);
                 return true;
             }
-            i++;
+            id++;
         }
         
         return false;
