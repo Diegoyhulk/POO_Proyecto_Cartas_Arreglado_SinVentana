@@ -10,7 +10,7 @@ public class Mesa
     public IInfectable iinf = new Organos();
     private EnemyAI eai = new EnemyAI();
     public int turnos { get; set; }
-    public void Turno(ref Coleccion coleccion,ref Mazo mazo,ref Player player,ref Enemy enemy,ref EnemyAI ai, ref bool win, ref bool lose)
+    public void Turno(ref Coleccion coleccion,ref Mazo mazo,ref Player player,ref Enemy enemy,ref EnemyAI ai,ref EspecialesC comando, ref bool win, ref bool lose)
     {
         
         if (mazo.coleccion.Count == 0)
@@ -31,11 +31,8 @@ public class Mesa
              $"(2)Usar carta");
             string input = ReadLine();
             if (input == "1" &&  player.cartasmano.Count > 0){if (Descarte(coleccion.cartas ,mazo, player)) break;}
-            if (input == "2")
-            {
-                if(UsarCarta(player,enemy, coleccion.cartas, mazo)) break;
-            }
-            else{InputNotValid();}
+            else if (input == "2"){if(UsarCarta(player,enemy, coleccion.cartas, mazo, comando)) break;}
+            else if (input != "1" && input != "2"){InputNotValid();}
         }
         //Turno Enemigo
         ForegroundColor = ConsoleColor.Red;
@@ -78,12 +75,13 @@ public class Mesa
 
     /// /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //Acciones Player
-    private bool UsarCarta(Player player,Enemy enemy,List<Cartas> cartas, Mazo mazo)
+    private bool UsarCarta(Player player,Enemy enemy,List<Cartas> cartas, Mazo mazo, EspecialesC comando)
     {
         WriteLine("Que carta quieres usar?\n" +
                       "(1)Bacteria\n" +
                       "(2)Cura\n" +
                       "(3)Organo\n" +
+                      "(4)Especial\n" +
                       "(Enter)Volver");
         string input = ReadLine();
         switch (input)
@@ -97,11 +95,78 @@ public class Mesa
             case "3":
                 if(UsarOrgano(player,mazo)){return true;}
                 return false;
+            case "4":
+                if (UsarCartaEspecial(player, enemy, cartas, mazo,comando)){return true;}
+                return false;
             default:
                 InputNotValid();
                 return false;
         }
     }
+
+    private bool UsarCartaEspecial(Player player, Enemy enemy, List<Cartas> cartas, Mazo mazo, EspecialesC comando)
+    {
+        bool hascard = false;
+        foreach (var c in player.cartasmano)
+        {
+            if (c is Especiales)
+            {
+                hascard = true;
+                break;
+            }
+        }
+        if (hascard)
+        {
+            WriteLine("Que Especial quieres usar?");
+            if (player.cartasmano.Count > 0 && player.cartasmano[0] is Especiales)
+            {
+                WriteLine($"(1):"); Nombrar_Carta(player, 0);
+            }
+            if (player.cartasmano.Count > 1 && player.cartasmano[1] is Especiales)
+            {
+                WriteLine($"(2):"); Nombrar_Carta(player, 1);
+            }
+            if (player.cartasmano.Count > 2 && player.cartasmano[2] is Especiales)
+            {
+                WriteLine($"(3):"); Nombrar_Carta(player, 2);
+            }
+            WriteLine("(Enter)Atras");
+        }
+        else
+        {
+            WriteLine("No tienes cartas Especiales!");
+            WriteLine("Pulsa enter para continuar");
+            ReadLine();
+            return false;
+        }
+        string input = ReadLine();
+        switch (input)
+        {
+            case "1" when player.cartasmano[0] is Especiales:
+            {
+                comando.UsarEspeciales(player,enemy,mazo,cartas,0);
+                break;
+            }
+            case "2" when player.cartasmano[1] is Especiales:
+            {
+                comando.UsarEspeciales(player,enemy,mazo,cartas,1);
+                break;
+            }
+            case "3" when player.cartasmano[2] is Especiales:
+            {
+                comando.UsarEspeciales(player,enemy,mazo,cartas,2);
+                break;
+            }
+            default:
+            WriteLine("input no valido");
+            WriteLine("Pulsa enter para continuar");
+            ReadLine();
+            break;
+        }
+        return false;
+        return false;
+    }
+
     private bool UsarBacteria(Player player,Enemy enemy, List<Cartas> cartas, Mazo mazo)
     {
         bool hascard = false;

@@ -13,13 +13,14 @@ class Program
         Coleccion coleccion = new Coleccion();
         Mesa mesa = new Mesa();
         EnemyAI ai = new EnemyAI();
+        EspecialesC esp = new EspecialesC();
         coleccion.GenerarMazo();
         mazo.Shuffle(coleccion.cartas);
         mazo.CartasIniciales(player);
         mazo.CartasIniciales(enemy);
         while (true)
         {
-            mesa.Turno(ref coleccion,ref mazo,ref player,ref enemy,ref ai, ref win, ref lose);
+            mesa.Turno(ref coleccion,ref mazo,ref player,ref enemy,ref ai,ref esp, ref win, ref lose);
             if(win){break;}
             else if(lose){break;}
         }

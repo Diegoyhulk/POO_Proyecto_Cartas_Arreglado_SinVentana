@@ -30,7 +30,7 @@ public class Organos : Cartas, IInfectable
                         else if (org.HP == 4)
                             WriteLine($"inmunizado, no puedes infectar|");
                         else if (org.HP > 2)
-                            WriteLine($"con un antibiótico bacteria|");
+                            WriteLine($"con un antibiótico|");
                     }
 
                     j++;
@@ -40,7 +40,7 @@ public class Organos : Cartas, IInfectable
                 switch (input)
                 {
                     case "1":
-                        try
+                        if(or[0] is not null)
                         {
                             or[0].HP--;
                             if (or[0].HP == 0)
@@ -55,52 +55,53 @@ public class Organos : Cartas, IInfectable
                             player.cartasmano.RemoveAt(id);
                             return true;
                         }
-                        catch (Exception ex)
-                        {
-                            WriteLine(ex);
-                        }
-                        finally
-                        {
-                            WriteLine("No hay organo quieres infectar");
-                        }
-
                         break;
                     case "2":
-                        or[1].HP--;
-                        if (or[1].HP == 0)
+                        if (or[1] is not null)
                         {
-                            cartas.Add(or[1]);
-                            player.organos[1] = null;
-                            or[1].HP = 2;
+                            or[1].HP--;
+                            if (or[1].HP == 0)
+                            {
+                                cartas.Add(or[1]);
+                                player.organos[1] = null;
+                                or[1].HP = 2;
+                            }
+                            cartas.Add(player.cartasmano[id]);
+                            player.cartasmano.RemoveAt(id);
+                            return true;
                         }
-
-                        cartas.Add(player.cartasmano[id]);
-                        player.cartasmano.RemoveAt(id);
-                        return true;
+                        break;
                     case "3":
-                        or[2].HP--;
-                        if (or[2].HP == 0)
+                        if (or[2] is not null)
                         {
-                            cartas.Add(or[2]);
-                            player.organos[2] = null;
-                            or[2].HP = 2;
+                            or[2].HP--;
+                            if (or[2].HP == 0)
+                            {
+                                cartas.Add(or[2]);
+                                player.organos[2] = null;
+                                or[2].HP = 2;
+                            }
+                            cartas.Add(player.cartasmano[id]);
+                            player.cartasmano.RemoveAt(id);
+                            return true;
                         }
-
-                        cartas.Add(player.cartasmano[id]);
-                        player.cartasmano.RemoveAt(id);
-                        return true;
+                        break;
                     case "4":
-                        or[3].HP--;
-                        if (or[3].HP == 0)
+                        if (or[3] is not null)
                         {
-                            cartas.Add(or[3]);
-                            player.organos[3] = null;
-                            or[3].HP = 2;
-                        }
+                            or[3].HP--;
+                            if (or[3].HP == 0)
+                            {
+                                cartas.Add(or[3]);
+                                player.organos[3] = null;
+                                or[3].HP = 2;
+                            }
 
-                        cartas.Add(player.cartasmano[id]);
-                        player.cartasmano.RemoveAt(id);
-                        return true;
+                            cartas.Add(player.cartasmano[id]);
+                            player.cartasmano.RemoveAt(id);
+                            return true;
+                        }
+                        break;
                     default:
                         WriteLine("Input no valido");
                         ReadLine();
@@ -164,7 +165,7 @@ public class Organos : Cartas, IInfectable
                     switch (input)
                     {
                         case 0:
-                            if (player.organos[0] is not null)
+                            if (or[0] is not null)
                             {
                                 or[0].HP--;
                                 if (or[0].HP == 0)
@@ -182,7 +183,7 @@ public class Organos : Cartas, IInfectable
                             input++;
                             break;
                         case 1:
-                            if (player.organos[1] is not null)
+                            if (or[1] is not null)
                             {
                                 or[1].HP--;
                                 if (or[1].HP == 0)
@@ -200,7 +201,7 @@ public class Organos : Cartas, IInfectable
                             input++;
                             break;
                         case 2:
-                            if (player.organos[2] is not null)
+                            if (or[2] is not null)
                             {
                                 or[2].HP--;
                                 if (or[2].HP == 0)
@@ -218,7 +219,7 @@ public class Organos : Cartas, IInfectable
                             input++;
                             break;
                         case 3:
-                            if (player.organos[3] is not null)
+                            if (or[3] is not null)
                             {
                                 or[3].HP--;
                                 if (or[3].HP == 0)
@@ -293,59 +294,76 @@ public class Organos : Cartas, IInfectable
                         else if (org.HP == 4)
                             WriteLine($"inmunizado, no puedes infectar|");
                         else if (org.HP > 2)
-                            WriteLine($"con un antibiótico bacteria|");
+                            WriteLine($"con un antibiótico|");
                     }
 
                     j++;
                 }
 
                 string input = ReadLine();
-                switch (input)
-                {
+                switch (input){
+                    
                     case "1":
-                        or[0].HP++;
-                        if (or[0].HP == 4)
+                        if(or[0] is not null)
                         {
-                            or[0].inmunizado = true;
-                        }
+                            or[0].HP++;
+                            if (or[0].HP == 4)
+                            {
+                                or[0].inmunizado = true;
+                            }
 
-                        cartas.Add(player.cartasmano[id]);
-                        player.cartasmano.RemoveAt(id);
-                        return true;
+                            cartas.Add(player.cartasmano[id]);
+                            player.cartasmano.RemoveAt(id);
+                            return true;
+                        }
+                        break;
                     case "2":
-                        or[1].HP++;
-                        if (or[1].HP == 4)
+                        if (or[1] is not null)
                         {
-                            or[1].inmunizado = true;
-                        }
+                            or[1].HP++;
+                            if (or[1].HP == 4)
+                            {
+                                or[1].inmunizado = true;
+                            }
 
-                        cartas.Add(player.cartasmano[id]);
-                        player.cartasmano.RemoveAt(id);
-                        return true;
+                            cartas.Add(player.cartasmano[id]);
+                            player.cartasmano.RemoveAt(id);
+                            return true;
+                        }
+                        break;
                     case "3":
-                        or[2].HP++;
-                        if (or[2].HP == 4)
+                        if (or[2] is not null)
                         {
-                            or[2].inmunizado = true;
-                        }
+                            or[2].HP++;
+                            if (or[2].HP == 4)
+                            {
+                                or[2].inmunizado = true;
+                            }
 
-                        cartas.Add(player.cartasmano[id]);
-                        player.cartasmano.RemoveAt(id);
-                        return true;
+                            cartas.Add(player.cartasmano[id]);
+                            player.cartasmano.RemoveAt(id);
+                            return true;
+                        }
+                        break;
                     case "4":
-                        or[3].HP++;
-                        if (or[3].HP == 4)
+                        if (or[3] is not null)
                         {
-                            or[3].inmunizado = true;
-                        }
+                            or[3].HP++;
+                            if (or[3].HP == 4)
+                            {
+                                or[3].inmunizado = true;
+                            }
 
-                        cartas.Add(player.cartasmano[id]);
-                        player.cartasmano.RemoveAt(id);
-                        return true;
+                            cartas.Add(player.cartasmano[id]);
+                            player.cartasmano.RemoveAt(id);
+                            return true;
+                        }
+                        break;
                     default:
                         WriteLine("Input no valido");
                         ReadLine();
                         return false;
+                
                 }
             }
             else

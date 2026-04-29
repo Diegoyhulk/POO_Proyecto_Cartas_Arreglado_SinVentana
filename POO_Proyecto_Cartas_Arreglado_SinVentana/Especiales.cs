@@ -12,6 +12,5 @@ public class Especiales : Cartas
         Error,
         Contagio
     }
-    
     public Uso uso { get; set; }
 }
