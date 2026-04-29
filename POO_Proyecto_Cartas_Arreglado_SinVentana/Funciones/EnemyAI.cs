@@ -5,6 +5,7 @@ public class EnemyAI
 {
     bool usadocarta;
     public IInfectable iinf = new Organos();
+    public ICurable icur = new Organos();
     public void ETurno(Enemy enemy, Mazo mazo, List<Cartas> cartas, Player player)
     {
         int rnd = Random.Shared.Next(0, 2);
@@ -126,7 +127,7 @@ public class EnemyAI
                 foreach (Cartas cura in e.cartasmano)
                 {
                     if (cura is not Curas){i++;continue;}
-                    if (iinf.Curar(e, cartas, i))
+                    if (icur.Curar(e, cartas, i))
                     {
                         WriteLine("He usado una Cura");
                         ReadLine();

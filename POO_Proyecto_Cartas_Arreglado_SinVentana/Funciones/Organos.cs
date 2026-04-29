@@ -1,7 +1,7 @@
 ﻿namespace POO_Proyecto_Cartas_Arreglado_SinVentana;
 
 using static System.Console;
-public class Organos : Cartas, IInfectable
+public class Organos : Cartas, IInfectable, ICurable
 {
     public override string Nombre { get; set; } = "Organo";
     public int HP { get; set; } = 2;

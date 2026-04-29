@@ -7,7 +7,8 @@ public class Mesa
 {
     private int orgsal = 0;
     private int eorgsal = 0;
-    public IInfectable iinf = new Organos();
+    private IInfectable iinf = new Organos();
+    private ICurable icur = new Organos();
     private EnemyAI eai = new EnemyAI();
     public int turnos { get; set; }
     public void Turno(ref Coleccion coleccion,ref Mazo mazo,ref Player player,ref Enemy enemy,ref EnemyAI ai,ref EspecialesC comando, ref bool win, ref bool lose)
@@ -268,17 +269,17 @@ public class Mesa
         {
             case "1" when player.cartasmano[0] is Curas:
             {
-                if(iinf.Curar(player, cartas, 0)){mazo.CogerCarta(player);return true;}
+                if(icur.Curar(player, cartas, 0)){mazo.CogerCarta(player);return true;}
                 break;
             }
             case "2" when player.cartasmano[1] is Curas:
             {
-                if(iinf.Curar(player, cartas, 1)){mazo.CogerCarta(player);return true;}
+                if(icur.Curar(player, cartas, 1)){mazo.CogerCarta(player);return true;}
                 break;
             }
             case "3" when player.cartasmano[2] is Curas:
             {
-                if(iinf.Curar(player, cartas, 2)){mazo.CogerCarta(player);return true;}
+                if(icur.Curar(player, cartas, 2)){mazo.CogerCarta(player);return true;}
                 break;
             }
             default:
