@@ -4,7 +4,7 @@ using static System.Console;
 public class Organos : Cartas, IInfectable
 {
     public override string Nombre { get; set; } = "Organo";
-    public int HP { get; private set; } = 2;
+    public int HP { get; set; } = 2;
     public bool inmunizado = false;
 
     public bool Infectar(Jugador player,Jugador enemy, List<Cartas> cartas, int id)
@@ -14,7 +14,7 @@ public class Organos : Cartas, IInfectable
             int i = 0;
             if (player.cartasmano[id].Tipo == Type.Comodín)
             {
-                Organos[] or = new Organos[4];
+                Organos[] or = new Organos[5];
                 int j = 0;
                 WriteLine("Elige que organo quieres infectar");
                 foreach (Organos org in enemy.organos)
@@ -112,7 +112,8 @@ public class Organos : Cartas, IInfectable
             {
                 foreach (Organos org in enemy.organos)
                 {
-                    if (org != null && !org.inmunizado && player.cartasmano[id].Tipo == org.Tipo)
+                    if (org != null && !org.inmunizado && player.cartasmano[id].Tipo == org.Tipo||
+                        org != null && !org.inmunizado && player.cartasmano[id].Tipo == Type.Comodín)
                     {
                         org.HP--;
                         if (org.HP == 0)
@@ -125,7 +126,8 @@ public class Organos : Cartas, IInfectable
                         player.cartasmano.RemoveAt(id);
                         return true;
                     }
-                    if (org != null && org.inmunizado && player.cartasmano[id].Tipo == org.Tipo)
+                    if (org != null && org.inmunizado && player.cartasmano[id].Tipo == org.Tipo||
+                        org != null && org.inmunizado && player.cartasmano[id].Tipo == Type.Comodín)
                     {
                         WriteLine($"| El Organo {player.cartasmano[i].Tipo} esta inmunizado!");
                         ReadLine();
@@ -243,7 +245,8 @@ public class Organos : Cartas, IInfectable
             {
                 foreach (Organos org in enemy.organos)
                 {
-                    if (org != null && !org.inmunizado && player.cartasmano[id].Tipo == org.Tipo)
+                    if (org != null && !org.inmunizado && player.cartasmano[id].Tipo == org.Tipo||
+                        org != null && !org.inmunizado && player.cartasmano[id].Tipo == Type.Comodín)
                     {
                         org.HP--;
                         if (org.HP == 0)
@@ -257,7 +260,8 @@ public class Organos : Cartas, IInfectable
                         return true;
                     }
 
-                    if (org != null && org.inmunizado && player.cartasmano[id].Tipo == org.Tipo)
+                    if (org != null && org.inmunizado && player.cartasmano[id].Tipo == org.Tipo||
+                        org != null && org.inmunizado && player.cartasmano[id].Tipo == Type.Comodín)
                     {
                         return false;
                     }
@@ -278,7 +282,7 @@ public class Organos : Cartas, IInfectable
             int i = 0;
             if (player.cartasmano[id].Tipo == Type.Comodín)
             {
-                Organos[] or = new Organos[4];
+                Organos[] or = new Organos[5];
                 int j = 0;
                 WriteLine("Elige que organo quieres curar o inmunizar");
                 foreach (Organos org in player.organos)
@@ -311,7 +315,6 @@ public class Organos : Cartas, IInfectable
                             {
                                 or[0].inmunizado = true;
                             }
-
                             cartas.Add(player.cartasmano[id]);
                             player.cartasmano.RemoveAt(id);
                             return true;
@@ -339,7 +342,6 @@ public class Organos : Cartas, IInfectable
                             {
                                 or[2].inmunizado = true;
                             }
-
                             cartas.Add(player.cartasmano[id]);
                             player.cartasmano.RemoveAt(id);
                             return true;
@@ -370,7 +372,8 @@ public class Organos : Cartas, IInfectable
             {
                 foreach (Organos org in player.organos)
                 {
-                    if (org != null && player.cartasmano[id].Tipo == org.Tipo && !org.inmunizado)
+                    if (org != null && !org.inmunizado && player.cartasmano[id].Tipo == org.Tipo||
+                        org != null && !org.inmunizado && player.cartasmano[id].Tipo == Type.Comodín)
                     {
                         org.HP++;
                         if (org.HP == 4)
@@ -383,7 +386,8 @@ public class Organos : Cartas, IInfectable
                         return true;
                     }
 
-                    if (org != null && player.cartasmano[id].Tipo == org.Tipo && org.inmunizado)
+                    if (org != null && org.inmunizado && player.cartasmano[id].Tipo == org.Tipo||
+                        org != null && org.inmunizado && player.cartasmano[id].Tipo == Type.Comodín)
                     {
                         WriteLine($"| El Organo {player.cartasmano[i].Tipo} ya esta inmunizado!");
                         ReadLine();
@@ -403,7 +407,7 @@ public class Organos : Cartas, IInfectable
             int i = 0;
             if (player.cartasmano[id].Tipo == Type.Comodín)
             {
-                Organos[] or = new Organos[4];
+                Organos[] or = new Organos[5];
                 int j = 0;
                 foreach (Organos org in player.organos)
                 {
@@ -489,7 +493,8 @@ public class Organos : Cartas, IInfectable
             {
                 foreach (Organos org in player.organos)
                 {
-                    if (org != null && !org.inmunizado && player.cartasmano[id].Tipo == org.Tipo)
+                    if (org != null && !org.inmunizado && player.cartasmano[id].Tipo == org.Tipo||
+                        org != null && !org.inmunizado && player.cartasmano[id].Tipo == Type.Comodín)
                     {
                         org.HP++;
                         if (org.HP == 4)
@@ -500,7 +505,6 @@ public class Organos : Cartas, IInfectable
                         player.cartasmano.RemoveAt(id);
                         return true;
                     }
-
                     if (org != null && org.inmunizado && player.cartasmano[id].Tipo == org.Tipo)
                     {
                         return false;

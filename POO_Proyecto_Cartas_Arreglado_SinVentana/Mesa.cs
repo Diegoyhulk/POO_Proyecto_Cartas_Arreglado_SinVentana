@@ -144,18 +144,18 @@ public class Mesa
         {
             case "1" when player.cartasmano[0] is Especiales:
             {
-                comando.UsarEspeciales(player,enemy,mazo,cartas,0);
-                break;
+                if(comando.UsarEspeciales(player,enemy,mazo,cartas,0)){return true;}
+                return false;
             }
             case "2" when player.cartasmano[1] is Especiales:
             {
-                comando.UsarEspeciales(player,enemy,mazo,cartas,1);
-                break;
+                if(comando.UsarEspeciales(player,enemy,mazo,cartas,1)){return true;}
+                return false;
             }
             case "3" when player.cartasmano[2] is Especiales:
             {
-                comando.UsarEspeciales(player,enemy,mazo,cartas,2);
-                break;
+                if(comando.UsarEspeciales(player,enemy,mazo,cartas,2)){return true;}
+                return false;
             }
             default:
             WriteLine("input no valido");

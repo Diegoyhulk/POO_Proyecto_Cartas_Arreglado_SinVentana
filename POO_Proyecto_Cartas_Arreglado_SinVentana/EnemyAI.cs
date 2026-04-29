@@ -94,12 +94,12 @@ public class EnemyAI
         int i = 0;
         foreach (Organos org in e.organos)
         {
+            i = 0;
             if (org != null)
             {
                 foreach (Cartas bact in e.cartasmano)
                 {
                     if (bact is not Bacterias){i++;continue;}
-
                     if (iinf.Infectar(e, player, cartas, i))
                     {
                         WriteLine("He usado una Bacteria");
@@ -107,7 +107,6 @@ public class EnemyAI
                         mazo.CogerCarta(e);
                         return true;
                     }
-                    i++;
                 }
                 return false;
             }
@@ -121,6 +120,7 @@ public class EnemyAI
         int i = 0;
         foreach (Organos org in e.organos)
         {
+            i = 0;
             if (org != null)
             {
                 foreach (Cartas cura in e.cartasmano)
@@ -133,7 +133,6 @@ public class EnemyAI
                         mazo.CogerCarta(e);
                         return true;
                     }
-                    i++;
                 }
             }
             
