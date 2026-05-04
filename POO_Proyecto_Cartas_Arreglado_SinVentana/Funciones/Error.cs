@@ -3,7 +3,7 @@
 using static System.Console;
 public class EError
 {
-    public bool Error(Jugador p, Jugador e, Mazo mazo, List<Cartas> cartas, int id)
+    public bool Error(Jugador p, Jugador e, Mazo<Cartas> mazo, List<Cartas> cartas, int id)
     {
         Cartas[] cuerposuplente = new Organos[4];
         cuerposuplente = e.organos;

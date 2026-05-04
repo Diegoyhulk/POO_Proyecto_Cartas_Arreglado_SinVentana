@@ -117,7 +117,7 @@ public class Coleccion
         }
         for (int i = 1; i <= 10; i++)
         {
-            if (i <= 10)
+            if (i <= 2)
             {
                 cartas.Add(new Especiales{uso = Especiales.Uso.Robo});
             }

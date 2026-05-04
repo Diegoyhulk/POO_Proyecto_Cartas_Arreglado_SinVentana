@@ -3,43 +3,19 @@
 namespace POO_Proyecto_Cartas_Arreglado_SinVentana;
 using static System.Console;
 
-public class Mazo
+public class Mazo<T> where T : Cartas
 {
-    public Queue<Cartas> coleccion = new Queue<Cartas>();
+    public Queue<T> coleccion = new Queue<T>();
     public int CantidadMazo => coleccion.Count;
 
-    public void Shuffle(List<Cartas> cartas)
+    public void Shuffle(List<T> cartas)
     {
+        Random rng = new Random();
         while (cartas.Count > 0)
         {
-            int rand = new Random().Next(0, cartas.Count);
+            int rand = rng.Next(cartas.Count);
             coleccion.Enqueue(cartas[rand]);
             cartas.Remove(cartas[rand]);
-        }
-    }
-    public void LLamarCartas()
-    {
-        foreach (Cartas carta in coleccion)
-        {
-            WriteLine(carta.Nombre);
-            switch (carta)
-            {
-                case Organos o:
-                    WriteLine(o.Tipo);
-                    break;
-
-                case Bacterias b:
-                    WriteLine(b.Tipo);
-                    break;
-
-                case Curas c:
-                    WriteLine(c.Tipo);
-                    break;
-
-                case Especiales e:
-                    WriteLine(e.uso);
-                    break;
-            }
         }
     }
     public bool CogerCarta(Jugador p)
@@ -49,7 +25,7 @@ public class Mazo
             if (p.cartasmano.Count == 3){WriteLine("Tienes no puedes coger más!");
                 WriteLine("Pulsa cualquier tecla para continuar");
                 ReadLine(); return false;}
-            WriteLine($"Has cogido la carta{coleccion.Peek().Nombre}");
+            WriteLine($"Has cogido la carta {coleccion.Peek().Nombre}");
             p.cartasmano.Add(coleccion.Dequeue());
             WriteLine($"Pulsa cualquier tecla para continuar");
             ReadLine();
@@ -70,23 +46,23 @@ public class Mazo
     {
         for (int i = 0; i < 3; i++)
         {
-            WriteLine($"Has cogido la carta{coleccion.Peek().Nombre}");
+            WriteLine($"Has cogido la carta {coleccion.Peek().Nombre}");
             p.cartasmano.Add(coleccion.Dequeue());
         }
     }
-    public void DescartarCarta(List<Cartas> cartas,Jugador p, int i)
+    public void DescartarCarta(List<T> cartas,Jugador p, int i)
     {
         if (p is Player)
         {
             WriteLine($"Carta eliminada: {p.cartasmano[i].Nombre}");
-            cartas.Add(p.cartasmano[i]);
+            cartas.Add((T)p.cartasmano[i]);
             p.cartasmano.Remove(p.cartasmano[i]);
             WriteLine("Pulsa cualquier tecla para continuar");
             ReadLine();
         }
         else
         {
-            cartas.Add(p.cartasmano[i]);
+            cartas.Add((T)p.cartasmano[i]);
             p.cartasmano.Remove(p.cartasmano[i]);
         }
         

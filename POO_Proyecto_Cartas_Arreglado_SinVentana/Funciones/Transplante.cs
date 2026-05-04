@@ -2,7 +2,7 @@
 using static System.Console;
 public class ETransplante
 {
-    public bool Transplantar(Jugador p, Jugador e, Mazo mazo, List<Cartas> cartas, int id)
+    public bool Transplantar(Jugador p, Jugador e, Mazo<Cartas> mazo, List<Cartas> cartas, int id)
     {
         int j = 0;
         int n = 0;
@@ -63,10 +63,10 @@ public class ETransplante
             }
 
             Cartas suplente = new Organos();
-            string input = ReadLine();
+            ConsoleKey input = ReadKey(true).Key;
             switch (input)
             {
-                case "1":
+                case ConsoleKey.D1:
                     try
                     {
                         if (p.organos[0] is not null)
@@ -90,7 +90,7 @@ public class ETransplante
                         ReadLine();
                     }
                     break;
-                case "2":
+                case ConsoleKey.D2:
                     try
                     {
                         if (p.organos[1] is not null)
@@ -114,7 +114,7 @@ public class ETransplante
                         ReadLine();
                     }
                     break;
-                case "3":
+                case ConsoleKey.D3:
                     try
                     {
                         if (p.organos[2] is not null)
@@ -138,7 +138,7 @@ public class ETransplante
                         ReadLine();
                     }
                     break;
-                case "4":
+                case ConsoleKey.D4:
                     try
                     {
                         if (p.organos[3] is not null)

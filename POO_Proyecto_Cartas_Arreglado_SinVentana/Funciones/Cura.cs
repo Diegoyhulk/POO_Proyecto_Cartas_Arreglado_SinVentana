@@ -32,10 +32,10 @@ public class Cura: ICurable
                     j++;
                 }
 
-                string input = ReadLine();
+                ConsoleKey input = ReadKey(true).Key;
                 switch (input){
                     
-                    case "1":
+                    case ConsoleKey.D1:
                         try
                         {
                             or[0].HP++;
@@ -53,7 +53,7 @@ public class Cura: ICurable
                             WriteLine("No hay organo quieres inmunizar");
                         }
                         break;
-                    case "2":
+                    case ConsoleKey.D2:
                         try
                         {
                             or[1].HP++;
@@ -71,7 +71,7 @@ public class Cura: ICurable
                             WriteLine("No hay organo quieres inmunizar");
                         }
                         break;
-                    case "3":
+                    case ConsoleKey.D3:
                         try
                         {
                             or[2].HP++;
@@ -89,7 +89,7 @@ public class Cura: ICurable
                             WriteLine("No hay organo quieres inmunizar");
                         }
                         break;
-                    case "4":
+                    case ConsoleKey.D4:
                         try
                         {
                             or[3].HP++;

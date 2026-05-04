@@ -111,22 +111,22 @@ public class Player : Jugador
                         j++;
                     }
 
-                    string input = ReadLine();
+                    ConsoleKey input = ReadKey(true).Key;
                     switch (input)
                     {
-                        case "1":
+                        case ConsoleKey.D1:
                             organos[0] = cartasmano[i];
                             cartasmano.RemoveAt(i);
                             return true;
-                        case "2":
+                        case ConsoleKey.D2:
                             organos[1] = cartasmano[i];
                             cartasmano.RemoveAt(i);
                             return true;
-                        case "3":
+                        case ConsoleKey.D3:
                             organos[2] = cartasmano[i];
                             cartasmano.RemoveAt(i);
                             return true;
-                        case "4":
+                        case ConsoleKey.D4:
                             organos[3] = cartasmano[i];
                             cartasmano.RemoveAt(i);
                             return true;

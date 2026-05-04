@@ -2,5 +2,5 @@
 
 public interface IUsarEspecial
 {
-    public bool UsarEspecial(Jugador p, Jugador e, Mazo mazo, List<Cartas> cartas, int id);
+    public bool UsarEspecial(Jugador p, Jugador e, Mazo<Cartas> mazo, List<Cartas> cartas, int id);
 }

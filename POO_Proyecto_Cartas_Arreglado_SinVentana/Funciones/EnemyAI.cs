@@ -8,18 +8,23 @@ public class EnemyAI
     bool usadocarta;
     public IInfectable iinf = new Infecta();
     public ICurable icur = new Cura();
-    public void ETurno(Enemy enemy, Mazo mazo, List<Cartas> cartas, Player player, EspecialesC comando)
+    public void ETurno(Enemy[] enemy, Mazo<Cartas> mazo, List<Cartas> cartas, Player player, EspecialesC comando, List<Jugador> players, int id, int num)
     {
+        Jugador objective = new Jugador();
+        while (true)
+        {
+            if(ElegirObjetivo(enemy,player,ref objective,id, num)){break;}
+        }
         int rnd = Random.Shared.Next(0, 2);
         while (true)
         {
             if (rnd == 0) //Attack mode
             {
-                if (EUsarBacteria(enemy,player,mazo,cartas)){break;}
-                else if (EUsarEspecial(player,enemy,cartas,mazo,comando)){break;}
-                else if (EUsarCura(enemy,mazo,cartas)){break;}
-                else if (EUsarOrgano(enemy,mazo)){break;}
-                else if (EDescartar(cartas, mazo, enemy))
+                if (EUsarBacteria(enemy[id],objective,mazo,cartas)){break;}
+                else if (EUsarEspecial(objective,enemy[id],cartas,mazo,comando, players)){break;}
+                else if (EUsarCura(enemy[id],mazo,cartas)){break;}
+                else if (EUsarOrgano(enemy[id],mazo)){break;}
+                else if (EDescartar(cartas, mazo, enemy[id]))
                 {
                     WriteLine("He Descartado una carta");
                     ReadLine();
@@ -28,11 +33,11 @@ public class EnemyAI
             }
             else //Defense Mode
             {
-                if (EUsarCura(enemy,mazo,cartas)){break;}
-                else if (EUsarOrgano(enemy,mazo)){break;}
-                else if (EUsarBacteria(enemy,player,mazo,cartas)){break;}
-                else if (EUsarEspecial(player,enemy,cartas,mazo,comando)){break;}
-                else if (EDescartar(cartas, mazo, enemy))
+                if (EUsarCura(enemy[id],mazo,cartas)){break;}
+                else if (EUsarOrgano(enemy[id],mazo)){break;}
+                else if (EUsarBacteria(enemy[id],objective,mazo,cartas)){break;}
+                else if (EUsarEspecial(objective, enemy[id], cartas, mazo, comando, players)){break;}
+                else if (EDescartar(cartas, mazo, enemy[id]))
                 {
                     WriteLine("He Descartado una carta");
                     ReadLine();
@@ -42,7 +47,30 @@ public class EnemyAI
         }
     }
 
-    private bool EDescartar(List<Cartas> cartas ,Mazo mazo, Enemy e)
+    private bool ElegirObjetivo(Enemy[] enemies, Player player, ref Jugador objective, int id, int num)
+    {
+        int rnd = Random.Shared.Next(0, 4);
+        switch (rnd)
+        {
+            case 0:
+                objective = player;
+                return true;
+            case 1:
+                if(enemies[0] == enemies[id]){return false;}
+                objective = enemies[0];
+                return true;
+            case 2:
+                if(enemies[1] == enemies[id] || num < 2){return false;}
+                objective = enemies[1];
+                return true;
+            case 3:
+                if(enemies[2] == enemies[id] || num < 3){return false;}
+                objective = enemies[2];
+                return true;
+        }
+        return false;
+    }
+    private bool EDescartar(List<Cartas> cartas ,Mazo<Cartas> mazo, Enemy e)
     {
         int i = 0;
         foreach (Cartas carta in e.cartasmano)
@@ -92,7 +120,7 @@ public class EnemyAI
         return true;
     }
 
-    private bool EUsarBacteria(Enemy e,Player player,Mazo mazo, List<Cartas> cartas)
+    private bool EUsarBacteria(Enemy e,Jugador player,Mazo<Cartas> mazo, List<Cartas> cartas)
     {
         int i = 0;
         foreach (Organos org in e.organos)
@@ -118,7 +146,7 @@ public class EnemyAI
         return false;
     }
 
-    private bool EUsarCura(Enemy e,Mazo mazo, List<Cartas> cartas)
+    private bool EUsarCura(Enemy e,Mazo<Cartas> mazo, List<Cartas> cartas)
     {
         int i = 0;
         foreach (Organos org in e.organos)
@@ -142,16 +170,16 @@ public class EnemyAI
         }
         return false;
     }
-    private bool EUsarEspecial(Player player,Enemy enemy,List<Cartas> cartas, Mazo mazo, EspecialesC comando)
+    private bool EUsarEspecial(Jugador player,Enemy enemy,List<Cartas> cartas, Mazo<Cartas> mazo, EspecialesC comando, List<Jugador> players)
     {
         
         int id = 0;
         foreach (var cart in enemy.cartasmano)
         {
-            if (enemy.cartasmano[id] is Especiales)
+            if (enemy.cartasmano[id] is Especiales esp)
             {
-                comando.UsarEspeciales(enemy,player,mazo,cartas,id);
-                WriteLine("He usado una carta Especiales");
+                comando.UsarEspeciales(enemy,player,mazo,cartas,id, players);
+                WriteLine($"He usado una carta Especial de {esp.uso}");
                 ReadLine();
                 mazo.DescartarCarta(cartas,enemy,id);
                 mazo.CogerCarta(enemy);
@@ -162,7 +190,7 @@ public class EnemyAI
         
         return false;
     }
-    private bool EUsarOrgano(Enemy e, Mazo mazo)
+    private bool EUsarOrgano(Enemy e, Mazo<Cartas> mazo)
     {
         int i = 0;
         foreach (var cart in e.cartasmano)

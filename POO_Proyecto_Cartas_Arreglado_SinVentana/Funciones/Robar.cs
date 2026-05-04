@@ -3,7 +3,7 @@ using static System.Console;
 
 public class ERobar
 {
-    public bool Robar(Jugador p, Jugador e, Mazo mazo, List<Cartas> cartas, int id)
+    public bool Robar(Jugador p, Jugador e, Mazo<Cartas> mazo, List<Cartas> cartas, int id)
     {
         int j = 0;
         int n = 0;
@@ -63,10 +63,10 @@ public class ERobar
                 j++;
             }
 
-            string input = ReadLine();
+            ConsoleKey input = ReadKey(true).Key;
             switch (input)
             {
-                case "1":
+                case ConsoleKey.D1:
                     try
                     {
                         if (p.organos[0] is null)
@@ -89,7 +89,7 @@ public class ERobar
                     }
 
                     break;
-                case "2":
+                case ConsoleKey.D2:
                     try
                     {
                         if (p.organos[1] is null)
@@ -112,7 +112,7 @@ public class ERobar
                     }
 
                     break;
-                case "3":
+                case ConsoleKey.D3:
                     try
                     {
                         if (p.organos[2] is null)
@@ -135,7 +135,7 @@ public class ERobar
                     }
 
                     break;
-                case "4":
+                case ConsoleKey.D4:
                     try
                     {
                         if (p.organos[3] is null)
@@ -207,7 +207,6 @@ public class ERobar
                         }
                         catch (NullReferenceException)
                         {}
-
                         input++;
                         break;
                     case 1:
@@ -264,7 +263,6 @@ public class ERobar
                         }
                         catch (NullReferenceException)
                         {}
-
                         input++;
                         break;
                     default:

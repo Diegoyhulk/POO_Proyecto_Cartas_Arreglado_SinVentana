@@ -3,7 +3,7 @@
 using static System.Console;
 public class EContagio
 {
-    public bool Contagiar(Jugador p, Jugador e, Mazo mazo, List<Cartas> cartas, int id)
+    public bool Contagiar(Jugador p, Jugador e, Mazo<Cartas> mazo, List<Cartas> cartas, int id)
     {
         int i = 0;
         int j = 0;
