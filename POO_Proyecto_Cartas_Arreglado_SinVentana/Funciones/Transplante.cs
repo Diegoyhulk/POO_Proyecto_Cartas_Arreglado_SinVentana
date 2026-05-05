@@ -77,6 +77,7 @@ public class ETransplante
                             cartas.Add(p.cartasmano[id]);
                             p.cartasmano.Remove(p.cartasmano[id]);
                             mazo.CogerCarta(p);
+                            return true;
                         }
                         else if (p.organos[0] is null)
                         {
@@ -101,6 +102,7 @@ public class ETransplante
                             cartas.Add(p.cartasmano[id]);
                             p.cartasmano.Remove(p.cartasmano[id]);
                             mazo.CogerCarta(p);
+                            return true;
                         }
                         else if (p.organos[1] is null)
                         {
@@ -125,6 +127,7 @@ public class ETransplante
                             cartas.Add(p.cartasmano[id]);
                             p.cartasmano.Remove(p.cartasmano[id]);
                             mazo.CogerCarta(p);
+                            return true;
                         }
                         else if (p.organos[2] is null)
                         {
@@ -149,6 +152,7 @@ public class ETransplante
                             cartas.Add(p.cartasmano[id]);
                             p.cartasmano.Remove(p.cartasmano[id]);
                             mazo.CogerCarta(p);
+                            return true;
                         }
                         else if (p.organos[3] is null)
                         {
