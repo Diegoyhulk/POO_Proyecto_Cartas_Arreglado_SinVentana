@@ -9,13 +9,11 @@ public class EDescartar
         {
             foreach (Jugador player in players)
             {
+                mazo.Shuffle(cartas);
                 cartas.Add(player.cartasmano[i]);
                 player.cartasmano.Remove(player.cartasmano[i]);
                 player.cartasmano.Add(mazo.coleccion.Dequeue());
             }
         }
-        
-        WriteLine("Se han descartado todas las cartas en mano");
-        ReadLine();
     }
 }

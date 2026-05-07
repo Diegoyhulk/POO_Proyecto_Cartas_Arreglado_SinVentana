@@ -26,8 +26,6 @@ public class EnemyAI
                 else if (EUsarOrgano(enemy[id],mazo)){break;}
                 else if (EDescartar(cartas, mazo, enemy[id]))
                 {
-                    WriteLine("He Descartado una carta");
-                    ReadLine();
                     break;
                 }
             }
@@ -39,8 +37,6 @@ public class EnemyAI
                 else if (EUsarEspecial(objective, enemy[id], cartas, mazo, comando, players)){break;}
                 else if (EDescartar(cartas, mazo, enemy[id]))
                 {
-                    WriteLine("He Descartado una carta");
-                    ReadLine();
                     break;
                 }
             }
@@ -133,8 +129,6 @@ public class EnemyAI
                     if (bact is not Bacterias){i++;continue;}
                     if (iinf.Infectar(e, player, cartas, i))
                     {
-                        WriteLine("He usado una Bacteria");
-                        ReadLine();
                         mazo.CogerCarta(e);
                         return true;
                     }
@@ -159,8 +153,6 @@ public class EnemyAI
                     if (cura is not Curas){i++;continue;}
                     if (icur.Curar(e, cartas, i))
                     {
-                        WriteLine("He usado una Cura");
-                        ReadLine();
                         mazo.CogerCarta(e);
                         return true;
                     }
@@ -179,8 +171,6 @@ public class EnemyAI
             if (enemy.cartasmano[id] is Especiales esp)
             {
                 comando.UsarEspeciales(enemy,player,mazo,cartas,id, players);
-                WriteLine($"He usado una carta Especial de {esp.uso}");
-                ReadLine();
                 mazo.DescartarCarta(cartas,enemy,id);
                 mazo.CogerCarta(enemy);
                 return true;
@@ -199,8 +189,6 @@ public class EnemyAI
             {
                 if (e.poner_organos(i, e))
                 {
-                    WriteLine("He puesto un Organo");
-                    ReadLine();
                     mazo.CogerCarta(e);
                     return true;
                 }

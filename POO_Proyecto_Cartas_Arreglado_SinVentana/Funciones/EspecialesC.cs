@@ -42,8 +42,6 @@ public class EspecialesC
         }
         else
         {
-            WriteLine("Algo anda mal");
-            ReadLine();
         }
         return false;
         

@@ -5,6 +5,7 @@ using static System.Console;
 
 public class Mazo<T> where T : Cartas
 {
+    
     public Queue<T> coleccion = new Queue<T>();
     public int CantidadMazo => coleccion.Count;
 
@@ -20,26 +21,29 @@ public class Mazo<T> where T : Cartas
     }
     public bool CogerCarta(Jugador p)
     {
+        
+        if (p.cartasmano.Count == 3) 
+        { 
+            return false;
+        }
+        p.cartasmano.Add(coleccion.Dequeue());
+        return true;
+        
+    }
+    public void DescartarCarta(List<T> cartas,Jugador p, int i)
+    {
         if (p is Player)
         {
-            if (p.cartasmano.Count == 3){WriteLine("Tienes no puedes coger más!");
-                WriteLine("Pulsa cualquier tecla para continuar");
-                ReadLine(); return false;}
-            WriteLine($"Has cogido la carta {coleccion.Peek().Nombre}");
-            p.cartasmano.Add(coleccion.Dequeue());
-            WriteLine($"Pulsa cualquier tecla para continuar");
-            ReadLine();
-            return true;
+            WriteLine($"Carta eliminada: {p.cartasmano[i].Nombre}");
+            cartas.Add((T)p.cartasmano[i]);
+            p.cartasmano.Remove(p.cartasmano[i]);
         }
         else
         {
-            if (p.cartasmano.Count == 3)
-            {
-                return false;
-            }
-            p.cartasmano.Add(coleccion.Dequeue());
-            return true;
+            cartas.Add((T)p.cartasmano[i]);
+            p.cartasmano.Remove(p.cartasmano[i]);
         }
+        
     }
 
     public void CartasIniciales(Jugador p)
@@ -49,22 +53,5 @@ public class Mazo<T> where T : Cartas
             WriteLine($"Has cogido la carta {coleccion.Peek().Nombre}");
             p.cartasmano.Add(coleccion.Dequeue());
         }
-    }
-    public void DescartarCarta(List<T> cartas,Jugador p, int i)
-    {
-        if (p is Player)
-        {
-            WriteLine($"Carta eliminada: {p.cartasmano[i].Nombre}");
-            cartas.Add((T)p.cartasmano[i]);
-            p.cartasmano.Remove(p.cartasmano[i]);
-            WriteLine("Pulsa cualquier tecla para continuar");
-            ReadLine();
-        }
-        else
-        {
-            cartas.Add((T)p.cartasmano[i]);
-            p.cartasmano.Remove(p.cartasmano[i]);
-        }
-        
     }
 }

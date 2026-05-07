@@ -34,8 +34,6 @@ public class ETransplante
 
                 if (n == 4)
                 {
-                    WriteLine("|El enemigo no tiene ningún organo|");
-                    ReadLine();
                 }
 
                 j++;
@@ -81,14 +79,10 @@ public class ETransplante
                         }
                         else if (p.organos[0] is null)
                         {
-                            WriteLine($"|No tienes un organo ahí|");
-                            ReadLine();
                         }
                     }
                     catch (NullReferenceException)
                     {
-                        WriteLine($"|No hay un organo|");
-                        ReadLine();
                     }
                     break;
                 case ConsoleKey.D2:

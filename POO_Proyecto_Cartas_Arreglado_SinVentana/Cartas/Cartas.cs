@@ -12,6 +12,7 @@ public abstract class Cartas
         Comodín
     }
     public Type Tipo { get; set; }
+    public string Cara {get; set;}
 }
 public class Curas : Cartas
 {

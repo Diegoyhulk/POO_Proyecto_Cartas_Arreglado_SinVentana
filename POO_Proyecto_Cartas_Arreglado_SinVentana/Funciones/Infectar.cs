@@ -12,23 +12,8 @@ public class Infecta: IInfectable
             {
                 Organos[] or = new Organos[5];
                 int j = 0;
-                WriteLine("Elige que organo quieres infectar");
                 foreach (Organos org in enemy.organos)
                 {
-                    if (org != null)
-                    {
-                        or[j] = org;
-                        WriteLine($"|({j + 1}){org.Nombre} {org.Tipo} ");
-                        if (org.HP == 2)
-                            WriteLine($"sin ninguna bacteria|");
-                        else if (org.HP < 2)
-                            WriteLine($"con una bacteria|");
-                        else if (org.HP == 4)
-                            WriteLine($"inmunizado, no puedes infectar|");
-                        else if (org.HP > 2)
-                            WriteLine($"con un antibiótico|");
-                    }
-
                     j++;
                 }
 
@@ -53,7 +38,6 @@ public class Infecta: IInfectable
                         }
                         catch (NullReferenceException)
                         {
-                            WriteLine("No hay bacteria para infectar");
                         }
                         break;
                     case ConsoleKey.D2:
@@ -74,7 +58,6 @@ public class Infecta: IInfectable
                         }
                         catch (NullReferenceException)
                         {
-                            WriteLine("No hay bacteria para infectar");
                         }
                         break;
                     case ConsoleKey.D3:
@@ -95,7 +78,6 @@ public class Infecta: IInfectable
                         }
                         catch (NullReferenceException)
                         {
-                            WriteLine("No hay bacteria para infectar");
                         }
                         break;
                     case ConsoleKey.D4:
@@ -116,12 +98,9 @@ public class Infecta: IInfectable
                         }
                         catch (NullReferenceException)
                         {
-                            WriteLine("No hay bacteria para infectar");
                         }
                         break;
                     default:
-                        WriteLine("Input no valido");
-                        ReadLine();
                         return false;
                 }
             }
@@ -146,16 +125,12 @@ public class Infecta: IInfectable
                     if (org != null && org.inmunizado && player.cartasmano[id].Tipo == org.Tipo||
                         org != null && org.inmunizado && player.cartasmano[id].Tipo == Organos.Type.Comodín)
                     {
-                        WriteLine($"| El Organo {player.cartasmano[i].Tipo} esta inmunizado!");
-                        ReadLine();
                         return false;
                     }
 
                     i++;
 
                 }
-                WriteLine("No hay organo que infectar");
-                ReadLine();
                 return false;
             }
             

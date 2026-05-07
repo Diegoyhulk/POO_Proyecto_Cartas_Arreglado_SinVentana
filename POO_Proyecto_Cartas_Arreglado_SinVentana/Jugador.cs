@@ -1,4 +1,7 @@
 ﻿using System.ComponentModel;
+using POO_Proyecto_Cartas_Arreglado_SinVentana.UI.Logica;
+using raygui_cs;
+using Raylib_cs;
 
 namespace POO_Proyecto_Cartas_Arreglado_SinVentana;
 using static System.Console;
@@ -16,21 +19,15 @@ public class Jugador
 
     protected static void ExistentOrgan()
     {
-        WriteLine("Ya existe un organo!");
-        WriteLine("Pulsa enter para continuar");
-        ReadLine();
     }
 
     protected static void InputNotValid()
     {
-        WriteLine("input no valido");
-        WriteLine("Pulsa enter para continuar");
-        ReadLine();
     }
 }
 public class Player : Jugador
 {
-    public bool poner_organos(int i, Jugador player)
+    public bool poner_organos(int i)
     {
         if (cartasmano[i] is Organos organo)
         {
@@ -92,53 +89,7 @@ public class Player : Jugador
                         break;
                     }
                 }
-                case Cartas.Type.Comodín:
-                {
-                    int j = 1;
-                    WriteLine("Elige que organo quieres poner");
-                    foreach (var org in organos)
-                    {
-                        if (org == null)
-                        {
-                            WriteLine($"Espacio {j} libre");
-                        }
-
-                        if (org != null)
-                        {
-                            Nombrar_Organo(org, j);
-                        }
-
-                        j++;
-                    }
-
-                    ConsoleKey input = ReadKey(true).Key;
-                    switch (input)
-                    {
-                        case ConsoleKey.D1:
-                            organos[0] = cartasmano[i];
-                            cartasmano.RemoveAt(i);
-                            return true;
-                        case ConsoleKey.D2:
-                            organos[1] = cartasmano[i];
-                            cartasmano.RemoveAt(i);
-                            return true;
-                        case ConsoleKey.D3:
-                            organos[2] = cartasmano[i];
-                            cartasmano.RemoveAt(i);
-                            return true;
-                        case ConsoleKey.D4:
-                            organos[3] = cartasmano[i];
-                            cartasmano.RemoveAt(i);
-                            return true;
-                        default:
-                            InputNotValid();
-                            break;
-                    }
-
-                    break;
-                }
             }
-
             return false;
         }
 

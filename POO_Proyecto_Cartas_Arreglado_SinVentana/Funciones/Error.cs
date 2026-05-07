@@ -12,8 +12,6 @@ public class EError
         cartas.Add(p.cartasmano[id]);
         p.cartasmano.Remove(p.cartasmano[id]);
         mazo.CogerCarta(p);
-        WriteLine("Habeis intercambiado cuerpos!");
-        ReadLine();
         return true;
     }
 }

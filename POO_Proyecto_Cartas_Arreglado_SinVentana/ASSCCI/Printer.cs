@@ -1,6 +1,6 @@
 ﻿namespace POO_Proyecto_Cartas_Arreglado_SinVentana.ASSCCI;
 using static System.Console;
-public class Printer
+public class rinter
 {
     private static string[] Organo =
     {
