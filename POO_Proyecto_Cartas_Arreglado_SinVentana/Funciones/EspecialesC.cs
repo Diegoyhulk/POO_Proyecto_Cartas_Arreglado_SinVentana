@@ -10,7 +10,7 @@ public class EspecialesC
     ETransplante tran = new ETransplante();
     EError er = new EError();
     EContagio cont = new EContagio();
-    public bool UsarEspeciales(Jugador p, Jugador e,Mazo<Cartas> mazo, List<Cartas> cartas, int id, List<Jugador> players)
+    public bool UsarEspeciales(Jugador p, Jugador e,Mazo<Cartas> mazo, List<Cartas> cartas, int id, List<Jugador> players, int num)
     {
         if (p.cartasmano[id] is Especiales esp)
         {
@@ -21,7 +21,7 @@ public class EspecialesC
             }
             if (esp.uso is Especiales.Uso.Descarte)
             {
-                desc.Descartar(players, mazo, cartas);
+                desc.Descartar(players, mazo, cartas, num);
                 return true;
             }
             if (esp.uso is Especiales.Uso.Transplante)

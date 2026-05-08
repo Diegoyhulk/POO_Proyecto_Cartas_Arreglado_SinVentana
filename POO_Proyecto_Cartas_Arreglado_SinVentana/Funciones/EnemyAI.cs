@@ -21,7 +21,7 @@ public class EnemyAI
             if (rnd == 0) //Attack mode
             {
                 if (EUsarBacteria(enemy[id],objective,mazo,cartas)){break;}
-                else if (EUsarEspecial(objective,enemy[id],cartas,mazo,comando, players)){break;}
+                else if (EUsarEspecial(objective,enemy[id],cartas,mazo,comando, players,num)){break;}
                 else if (EUsarCura(enemy[id],mazo,cartas)){break;}
                 else if (EUsarOrgano(enemy[id],mazo)){break;}
                 else if (EDescartar(cartas, mazo, enemy[id]))
@@ -34,7 +34,7 @@ public class EnemyAI
                 if (EUsarCura(enemy[id],mazo,cartas)){break;}
                 else if (EUsarOrgano(enemy[id],mazo)){break;}
                 else if (EUsarBacteria(enemy[id],objective,mazo,cartas)){break;}
-                else if (EUsarEspecial(objective, enemy[id], cartas, mazo, comando, players)){break;}
+                else if (EUsarEspecial(objective, enemy[id], cartas, mazo, comando, players, num)){break;}
                 else if (EDescartar(cartas, mazo, enemy[id]))
                 {
                     break;
@@ -162,7 +162,7 @@ public class EnemyAI
         }
         return false;
     }
-    private bool EUsarEspecial(Jugador player,Enemy enemy,List<Cartas> cartas, Mazo<Cartas> mazo, EspecialesC comando, List<Jugador> players)
+    private bool EUsarEspecial(Jugador player,Enemy enemy,List<Cartas> cartas, Mazo<Cartas> mazo, EspecialesC comando, List<Jugador> players, int num)
     {
         
         int id = 0;
@@ -170,7 +170,7 @@ public class EnemyAI
         {
             if (enemy.cartasmano[id] is Especiales esp)
             {
-                comando.UsarEspeciales(enemy,player,mazo,cartas,id, players);
+                comando.UsarEspeciales(enemy,player,mazo,cartas,id, players, num);
                 mazo.DescartarCarta(cartas,enemy,id);
                 mazo.CogerCarta(enemy);
                 return true;

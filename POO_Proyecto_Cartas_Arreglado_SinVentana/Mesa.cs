@@ -14,16 +14,12 @@ public class Mesa
     private Program program;
     private int orgsal = 0;
     private int eorgsal = 0;
-    private IInfectable iinf = new Infecta();
-    private ICurable icur = new Cura();
-    private EnemyAI eai = new EnemyAI();
-    private Printer print = new Printer();
+    private static Printer print = new Printer();
     public event Action<bool,bool> FinalizarPartida;
     public int turnos { get; set; }
     public void Turno(ref Coleccion coleccion, ref Mazo<Cartas> mazo, ref Player player, ref Enemy[] enemy,
         ref EnemyAI ai, ref EspecialesC comando, int num, List<Jugador> players, Dictionary<Cartas, Texture2D> texturas)
     {
-        ComprobarOrganosSaludables(player,enemy,ref win,ref lose, num);
         Clear();
         if (mazo.coleccion.Count == 0)
         {
@@ -34,82 +30,59 @@ public class Mesa
             if(print.TurnoPlayer(player,enemy, coleccion.cartas, mazo, num, players, texturas)){break;}
         //Turno Enemigo
         ForegroundColor = ConsoleColor.Red;
-        TurnosEnemigos(coleccion, mazo, player, enemy, ai, num, players, comando);
+        TurnosEnemigos(coleccion, mazo, player, enemy, ai, num, players, comando, texturas);
         ForegroundColor = ConsoleColor.Gray;
         //Acaba el turno
         turnos++;
+        ComprobarOrganosSaludables(players,ref win,ref lose, num);
     }
 
-    private static void TurnosEnemigos(Coleccion coleccion, Mazo<Cartas> mazo, Player player, Enemy[] enemy, EnemyAI ai, int num, List<Jugador> players,  EspecialesC comando)
+    private static void TurnosEnemigos(Coleccion coleccion, Mazo<Cartas> mazo, Player player, Enemy[] enemy, EnemyAI ai, int num, List<Jugador> players,  EspecialesC comando, Dictionary<Cartas, Texture2D> texturas)
     {
         Random rng = new Random();
         int tiempo = rng.Next(1000, 2000); // entre 0.5 y 1.5 segundos
-        Thread.Sleep(tiempo);
-        if (num >= 1){ai.ETurno(enemy,mazo,coleccion.cartas,player, comando,players,0, num);}
-        if (num >= 2){ai.ETurno(enemy,mazo,coleccion.cartas,player, comando, players,1, num);}
-        if (num == 3){ai.ETurno(enemy, mazo, coleccion.cartas, player, comando, players, 2, num);}
+        if (num >= 1)
+        {
+            Thread.Sleep(tiempo);
+            ai.ETurno(enemy,mazo,coleccion.cartas,player, comando,players,0, num);
+            print.PrintearMesa(player, enemy, texturas);
+            Thread.Sleep(tiempo);
+        }
+        if (num >= 2)
+        {
+            ai.ETurno(enemy,mazo,coleccion.cartas,player, comando, players,1, num);
+            print.PrintearMesa(player, enemy, texturas);
+            Thread.Sleep(tiempo);
+        }
+        if (num == 3)
+        {
+            ai.ETurno(enemy, mazo, coleccion.cartas, player, comando, players, 2, num);
+            print.PrintearMesa(player, enemy, texturas);
+            Thread.Sleep(tiempo);
+        }
     }
 
-    private void ComprobarOrganosSaludables(Player player,Enemy[] enemy,ref bool win, ref bool lose, int num)
+    private void ComprobarOrganosSaludables(List<Jugador> players,ref bool win, ref bool lose, int num)
     {
         orgsal = 0;
-        eorgsal = 0;
-        foreach (Cartas cart in  player.organos)
+        foreach (Jugador player in players)
         {
-            if (cart is Organos org)
+            orgsal=0;
+            foreach (Cartas cart in  player.organos)
             {
-                if(org.HP >= 2)
-                    orgsal++;
-            }
-            if (orgsal == 4)
-            {
-                win = true;
-                FinalizarPartida(win,lose);
+                if (cart is Organos org)
+                {
+                    if(org.HP >= 2)
+                        orgsal++;
+                }
+                if (orgsal == 4)
+                {
+                    win = true;
+                    FinalizarPartida(win,lose);
+                }
             }
         }
-        foreach (Cartas cart in  enemy[0].organos)
-        {
-            if (cart is Organos org)
-            {
-                if(org.HP >= 2)
-                    eorgsal += 1;
-            }
-            if (eorgsal == 4)
-            {
-                lose = true;
-                FinalizarPartida(win,lose);
-            }
-        }
-        if(num == 1){return;}
-        eorgsal = 0;
-        foreach (Cartas cart in  enemy[2].organos)
-        {
-            if (cart is Organos org)
-            {
-                if(org.HP >= 2)
-                    eorgsal += 1;
-            }
-            if (eorgsal == 4)
-            {
-                lose = true;
-                FinalizarPartida(win,lose);
-            }
-        }
-        if (num == 2){return;}
-        eorgsal = 0;
-        foreach (Cartas cart in  enemy[1].organos)
-        {
-            if (cart is Organos org)
-            {
-                if(org.HP >= 2)
-                    eorgsal += 1;
-            }
-            if (eorgsal == 4)
-            {
-                lose = true;
-                FinalizarPartida(win,lose);
-            }
-        }
+        
     }
     /// /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //Acciones Player

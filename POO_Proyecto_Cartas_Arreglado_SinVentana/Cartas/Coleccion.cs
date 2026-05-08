@@ -80,7 +80,7 @@ public class Coleccion
                         Cara = "Texturas/VirusVerde.jpg"
                     });
                     break;
-                case <= 17 and >16:
+                case <= 17 and > 16:
                     cartas.Add(new Bacterias
                     {
                         Tipo = Cartas.Type.Comodín,
