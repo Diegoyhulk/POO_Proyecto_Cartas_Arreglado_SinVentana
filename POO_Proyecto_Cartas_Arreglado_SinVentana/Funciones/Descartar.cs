@@ -9,12 +9,21 @@ public class EDescartar
         {
             foreach (Jugador player in players)
             {
-                if (num <= i++){return;}
-                mazo.Shuffle(cartas);
-                cartas.Add(player.cartasmano[i]);
-                player.cartasmano.Remove(player.cartasmano[i]);
-                player.cartasmano.Add(mazo.coleccion.Dequeue());
+                if (mazo.coleccion.Count > 0)
+                {
+                    cartas.Add(player.cartasmano[i]);
+                    player.cartasmano.Remove(player.cartasmano[i]);
+                    player.cartasmano.Add(mazo.coleccion.Dequeue());
+                }
+                else
+                {
+                    mazo.Shuffle(cartas);
+                    cartas.Add(player.cartasmano[i]);
+                    player.cartasmano.Remove(player.cartasmano[i]);
+                    player.cartasmano.Add(mazo.coleccion.Dequeue());
+                }
             }
         }
+        
     }
 }

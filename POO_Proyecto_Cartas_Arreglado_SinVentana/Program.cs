@@ -6,7 +6,9 @@ namespace POO_Proyecto_Cartas_Arreglado_SinVentana;
 using static System.Console;
 class Program
 {
-    public static bool end;
+    private static bool resultadoWin;
+    private static bool resultadoLose;
+    static bool endScreen = false;
     static int num;
     static void Main(string[] args)
     {
@@ -18,14 +20,20 @@ class Program
         Mesa mesa = new Mesa();
         EnemyAI ai = new EnemyAI();
         EspecialesC esp = new EspecialesC();
-        List<Jugador> players = new List<Jugador>() {player, enemy[0], enemy[1], enemy[2]};
+        List<Jugador> players = new List<Jugador>();
+        players.Add(player);
+        
+        while (true){
+            if (Elegirenemigos()){break;}
+        }
+        for (int j = 0; j < num; j++)
+        {
+            players.Add(enemy[j]);
+        }
         mesa.FinalizarPartida += AcabarPartida;
         coleccion.GenerarMazo();
         mazo.Shuffle(coleccion.cartas);
         mazo.CartasIniciales(player);
-        while (true){
-            if (Elegirenemigos()){break;}
-        }
         int i = 1;
         foreach (Enemy enemy1 in enemy )
         {
@@ -37,29 +45,74 @@ class Program
         Raylib.SetTargetFPS(60);
         
 
-        while (true)
+        while (!Raylib.WindowShouldClose())
         {
-            mesa.Turno(ref coleccion,ref mazo,ref player,ref enemy,ref ai,ref esp, num, players, texturas);
-            if (end){break;}
+
+            if (!endScreen)
+            {
+                mesa.Turno(ref coleccion, ref mazo, ref player, ref enemy, ref ai, ref esp, num, players, texturas);
+            }
+            else
+            {
+                if (DibujarFinPartida(resultadoWin, resultadoLose))
+                    break;
+            }
+
         }
+
         foreach (var tex in texturas.Values)
             Raylib.UnloadTexture(tex);
 
         Raylib.CloseWindow();
     }
-    private static void AcabarPartida(bool win, bool lose)
+    public static void AcabarPartida(bool win, bool lose)
     {
-        if (win)
-        {
-            WriteLine("Tienes todos los organos sanos y ganas!");
-            end = true;
-        }
-        else if (lose)
-        {
-            WriteLine("El enemigo tiene todos los organos sanos y pierdes!");
-            end = true;
-        }
+        endScreen = true;
+        resultadoWin = win;
+        resultadoLose = lose;
     }
+    public static bool DibujarFinPartida(bool win, bool lose)
+    {
+        Raylib.BeginDrawing();
+        Raylib.ClearBackground(Color.DarkGreen);
+        string mensaje = win
+            ? "¡Tienes todos los órganos sanos!\n\n¡HAS GANADO!"
+            : "El enemigo tiene todos los órganos sanos.\n\nHAS PERDIDO";
+
+        Color color = win ? Color.Green : Color.Red;
+
+        // Fondo semitransparente
+        Raylib.DrawRectangle(0, 0, Raylib.GetScreenWidth(), Raylib.GetScreenHeight(),
+            Raylib.ColorAlpha(Color.Black, 0.7f));
+
+        int w = 900;
+        int h = 400;
+        int x = (Raylib.GetScreenWidth() - w) / 2;
+        int y = (Raylib.GetScreenHeight() - h) / 2;
+
+        Raylib.DrawRectangle(x, y, w, h, Color.DarkGray);
+        Raylib.DrawRectangleLines(x, y, w, h, Color.White);
+
+        Raylib.DrawText(mensaje, x + 40, y + 80, 40, color);
+
+        Rectangle boton = new Rectangle(x + w/2 - 100, y + h - 80, 200, 50);
+        bool hover = Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), boton);
+
+        Raylib.DrawRectangleRec(boton, hover ? Color.SkyBlue : Color.DarkBlue);
+        Raylib.DrawRectangleLines((int)boton.X, (int)boton.Y, (int)boton.Width, (int)boton.Height, Color.White);
+        Raylib.DrawText("SALIR", (int)boton.X + 55, (int)boton.Y + 10, 30, Color.White);
+
+        if (hover && Raylib.IsMouseButtonPressed(MouseButton.Left))
+        {
+            Raylib.EndDrawing();
+            return true;
+        }
+        
+        Raylib.EndDrawing();
+        return false;
+    }
+
+
 
     private static bool Elegirenemigos()
     {

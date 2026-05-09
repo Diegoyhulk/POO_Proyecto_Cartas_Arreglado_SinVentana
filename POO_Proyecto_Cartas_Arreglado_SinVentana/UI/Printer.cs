@@ -15,11 +15,13 @@ public class Printer
     private EspecialesC comando = new EspecialesC();
     private EDescartar edesc = new EDescartar();
     private EError err =  new EError();
+    private Comodín com = new Comodín();
+    private CuraCom curcom = new CuraCom();
+    private Elegir el = new Elegir();
     private bool mostrardescarte = false;
     bool mostrarorganocomodín;
     
     private int indiceCartaSeleccionada = 0;
-    
     private bool mostrarcuracomodin = false;
     
     private bool mostrarelegirbacteria = false;
@@ -38,8 +40,8 @@ public class Printer
     private bool error;
     private bool robo;
     private bool contagio;
-
-
+    private bool transplante;
+    
     public void PrintearMesa(Player player, Enemy[] enemies, Dictionary<Cartas,Texture2D> texturas)
     {
         Raylib.BeginDrawing();
@@ -57,6 +59,7 @@ public class Printer
         
         DibujarOrganosPlayer(player, texturas);
         DibujarOrganosEnemigos(enemies, texturas);
+        PlayerCartasManoFueraTurno(player, texturas);
         
         Raylib.EndDrawing();
     }
@@ -90,7 +93,7 @@ public class Printer
         
         if (mostrarorganocomodín)
         {
-            if (ElegirOrganoComodin(player, indiceCartaSeleccionada,
+            if (com.ElegirOrganoComodin(player, indiceCartaSeleccionada,
                     ref mostrarorganocomodín, texturas, mazo))
             {
                 Raylib.EndDrawing();
@@ -100,7 +103,7 @@ public class Printer
 
         if (mostrarcuracomodin)
         {
-            if (ElegirCuraComodín(player, indiceCartaSeleccionada,
+            if (curcom.ElegirCuraComodín(player, indiceCartaSeleccionada,
                     ref mostrarcuracomodin, texturas, mazo, cartas))
             {
                 Raylib.EndDrawing();
@@ -110,46 +113,56 @@ public class Printer
 
         if (mostrarelegirenemigo)
         {
-            if (ElegirEnemigo(num, ref mostrarelegirenemigo, ref enemigoObjetivo))
+            if (el.ElegirEnemigo(num, ref mostrarelegirenemigo, ref enemigoObjetivo))
             {
-                if (!cartaespecial && bacteriacomodin)
+                if (bacteriacomodin)
                 {
                     mostrarElegirOrganoComodin = true;
+                    bacteriacomodin = false;
                     Raylib.EndDrawing();
                     return false;
                 }
-                else if ( !cartaespecial && iinf.Infectar(player, enemies[enemigoObjetivo], cartas, indiceCartaComodin))
+                if (!cartaespecial && !bacteriacomodin)
                 {
-                    mazo.CogerCarta(player);
-                    Raylib.EndDrawing();
-                    return true;
+                    if (iinf.Infectar(player, enemies[enemigoObjetivo], cartas, indiceCartaComodin))
+                    {
+                        mazo.CogerCarta(player);
+                        Raylib.EndDrawing();
+                        return true;
+                    }
                 }
-                else if(cartaespecial)
+                if (cartaespecial)
                 {
                     if (error)
                     {
-                        err.Error(player,enemies[enemigoObjetivo],mazo,cartas,indiceCartaComodin);
-                    }
-                    else
-                    {
-                        mostrarelegirespecial = true;
+                        err.Error(player, enemies[enemigoObjetivo], mazo, cartas, indiceCartaComodin);
                         Raylib.EndDrawing();
-                        return false;
+                        return true;
                     }
+                    if (contagio)
+                    {
+                        comando.Contagio(player, enemies[enemigoObjetivo], cartas, mazo, indiceCartaComodin);
+                        Raylib.EndDrawing();
+                        return true;
+                    }
+                    mostrarelegirespecial = true;
+                    Raylib.EndDrawing();
+                    return false;
                 }
             }
         }
+
 
         if (mostrarElegirOrganoComodin)
         {
             int organoElegido = -1;
 
-            if (ElegirOrganoEnemigo(enemies[enemigoObjetivo],
+            if (el.ElegirOrganoEnemigo(enemies[enemigoObjetivo],
                     ref mostrarElegirOrganoComodin,
                     ref organoElegido,
                     texturas))
             {
-                if (Infectar(player, enemies[enemigoObjetivo], cartas, indiceCartaComodin, organoElegido))
+                if (el.Infectar(player, enemies[enemigoObjetivo], cartas, indiceCartaComodin, organoElegido))
                 {
                     mazo.CogerCarta(player);
                     bacteriacomodin = false;
@@ -161,25 +174,34 @@ public class Printer
         if (mostrarelegirespecial)
         {
             int organoElegido = -1;
-            if (ElegirOrganoEnemigo(enemies[enemigoObjetivo],
-                    ref mostrarElegirOrganoComodin,
+
+            if (el.ElegirOrganoEnemigo(enemies[enemigoObjetivo],
+                    ref mostrarelegirespecial,
                     ref organoElegido,
                     texturas))
             {
                 if (robo)
                 {
-                    
+                    if (comando.Robo(player, enemies[enemigoObjetivo], organoElegido, cartas, mazo, indiceCartaComodin))
+                    {
+                        Raylib.EndDrawing();
+                        return true;
+                    }
                 }
-                else if(contagio)
+                else if (transplante)
                 {
-                    
+                    if (comando.Transplante(player, enemies[enemigoObjetivo], organoElegido, cartas, mazo,
+                            indiceCartaComodin))
+                    {
+                        Raylib.EndDrawing();
+                        return true;
+                    }
                 }
-                else
-                {
-                    
-                }
+
+                cartaespecial = false;
+                Raylib.EndDrawing();
+                return true;
             }
-            
         }
         Raylib.EndDrawing();
         return false;
@@ -225,8 +247,7 @@ public class Printer
         }
     }
 
-    private bool DibujarCartasPlayer(Player player, Dictionary<Cartas, Texture2D> tex,Enemy[] enemy,
-        List<Cartas> cartas, Mazo<Cartas> mazo,int num, List<Jugador> players)
+    private bool DibujarCartasPlayer(Player player, Dictionary<Cartas, Texture2D> tex,Enemy[] enemy,List<Cartas> cartas, Mazo<Cartas> mazo,int num, List<Jugador> players)
     {
         
         int posX = 930;
@@ -251,102 +272,137 @@ public class Printer
                         {
                             if (!mostrarElegirOrganoComodin)
                             {
-                                if (CartaClicada(posX, posY, tex[carta], escala))
+                                if (!mostrarelegirespecial) //Ya se que esta anidado pero es que no funcona de otra forma
                                 {
-                                    if (car.Cardlicked(player, enemy, cartas, mazo, num, players, i))
+                                    mostrarcuracomodin = false;
+                                    mostrarelegirbacteria = false;
+                                    mostrarelegirenemigo = false;
+                                    bacteriacomodin = false;
+                                    mostrarElegirOrganoComodin = false;
+                                    cartaespecial = false;
+                                    mostrarelegirespecial = false;
+                                    error = false;
+                                    robo = false;
+                                    contagio = false;
+                                    transplante = false;
+                                    
+                                    
+                                    if (CartaClicada(posX, posY, tex[carta], escala))
                                     {
-                                        Raylib.EndDrawing();
-                                        return true;
-                                    }
-                                    else if (carta is Organos && carta.Tipo == Cartas.Type.Comodín)
-                                    {
-                                        mostrarorganocomodín = true;
-                                        indiceCartaSeleccionada = i;
-                                        return false;
-                                    }
-                                    else if (carta is Curas && carta.Tipo == Cartas.Type.Comodín)
-                                    {
-                                        mostrarcuracomodin = true;
-                                        indiceCartaSeleccionada = i;
-                                        return false;
-                                    }
-                                    else if (carta.Tipo == Cartas.Type.Comodín && carta is Bacterias)
-                                    {
-                                        bacteriacomodin = true;
-                                        indiceCartaComodin = i;
-
-                                       
-                                        if (num > 1)
+                                        if (car.Cardlicked(player, enemy, cartas, mazo, num, players, i))
                                         {
-                                            mostrarelegirenemigo = true;
+                                            Raylib.EndDrawing();
+                                            return true;
                                         }
-                                        else
+                                        else if (carta is Organos && carta.Tipo == Cartas.Type.Comodín)
                                         {
-                                            enemigoObjetivo = 0;
-                                            mostrarElegirOrganoComodin = true;
+                                            mostrarorganocomodín = true;
+                                            indiceCartaSeleccionada = i;
+                                            return false;
                                         }
-
-                                        return false;
-                                    }
-
-                                    else if (carta is Bacterias && carta.Tipo != Cartas.Type.Comodín)
-                                    {
-                                        bacteriacomodin = false;      
-                                        indiceCartaComodin = i;      
-
-                                        if (num > 1)
+                                        else if (carta is Curas && carta.Tipo == Cartas.Type.Comodín)
                                         {
-                                            mostrarelegirenemigo = true; 
+                                            mostrarcuracomodin = true;
+                                            indiceCartaSeleccionada = i;
+                                            return false;
                                         }
-                                        else
+                                        else if (carta.Tipo == Cartas.Type.Comodín && carta is Bacterias)
                                         {
-                                            enemigoObjetivo = 0;
-                                            if (iinf.Infectar(player, enemy[0], cartas, i))
+                                            bacteriacomodin = true;
+                                            indiceCartaComodin = i;
+
+
+                                            if (num > 1)
                                             {
-                                                mazo.CogerCarta(player);
-                                                return true;
+                                                mostrarelegirenemigo = true;
                                             }
+                                            else
+                                            {
+                                                enemigoObjetivo = 0;
+                                                mostrarElegirOrganoComodin = true;
+                                            }
+
+                                            return false;
                                         }
 
-                                        return false;
-                                    }
-                                    else if (carta is Especiales esp && esp.uso is not Especiales.Uso.Descarte)
-                                    {
-                                        if (num > 1)
+                                        else if (carta is Bacterias && carta.Tipo != Cartas.Type.Comodín)
                                         {
-                                            mostrarelegirenemigo = true;
+                                            bacteriacomodin = false;
+                                            indiceCartaComodin = i;
+
+                                            if (num > 1)
+                                            {
+                                                mostrarelegirenemigo = true;
+                                            }
+                                            else
+                                            {
+                                                enemigoObjetivo = 0;
+                                                if (iinf.Infectar(player, enemy[0], cartas, i))
+                                                {
+                                                    mazo.CogerCarta(player);
+                                                    return true;
+                                                }
+                                            }
+
+                                            return false;
+                                        }
+                                        else if (carta is Especiales esp)
+                                        {
                                             cartaespecial = true;
-                                        }
-                                        else
-                                        {
-                                            enemigoObjetivo = 0;
-                                        }
-                                        
-                                        if (esp.uso is Especiales.Uso.Robo)
-                                        {
-                                            robo = true;
-                                        }
-                                        else if (esp.uso is Especiales.Uso.Error)
-                                        {
-                                            error = true;
-                                        }
-                                        else if (esp.uso is Especiales.Uso.Contagio)
-                                        {
-                                            contagio = true;
-                                        }
-                                    }
-                                    else if (carta is Especiales espd && espd.uso is Especiales.Uso.Descarte)
-                                    {
-                                        edesc.Descartar(players,mazo,cartas,num);
-                                    }
-                                }
+                                            indiceCartaComodin = i;
+                                            switch (esp.uso)
+                                            {
+                                                case Especiales.Uso.Descarte:
+                                                    cartaespecial = false;
+                                                    edesc.Descartar(players, mazo, cartas, num);
+                                                    return true;
 
-                                if (CartaHover(posX, posY, tex[carta], escala))
-                                {
-                                    Raylib.DrawRectangleLines(posX - 4, posY - 4,
-                                        (int)(tex[carta].Width * escala) + 8,
-                                        (int)(tex[carta].Height * escala) + 8,
-                                        Color.Yellow);
+                                                case Especiales.Uso.Error:
+                                                    error = true;
+                                                    break;
+
+                                                case Especiales.Uso.Robo:
+                                                    robo = true;
+                                                    break;
+
+                                                case Especiales.Uso.Transplante:
+                                                    transplante = true;
+                                                    break;
+
+                                                case Especiales.Uso.Contagio:
+                                                    contagio = true;
+                                                    break;
+                                            }
+
+                                            if (num > 1)
+                                            {
+                                                mostrarelegirenemigo = true;
+                                            }
+                                            else
+                                            {
+                                                enemigoObjetivo = 0;
+                                                if (error || contagio)
+                                                {
+                                                    mostrarelegirespecial = true;
+                                                }
+                                                else
+                                                {
+                                                    mostrarElegirOrganoComodin = true;
+                                                }
+                                            }
+
+                                            return false;
+                                        }
+
+                                    }
+
+                                    if (CartaHover(posX, posY, tex[carta], escala))
+                                    {
+                                        Raylib.DrawRectangleLines(posX - 4, posY - 4,
+                                            (int)(tex[carta].Width * escala) + 8,
+                                            (int)(tex[carta].Height * escala) + 8,
+                                            Color.Yellow);
+                                    }
                                 }
                             }
                         }
@@ -387,7 +443,6 @@ public class Printer
             posX += (int)(tex[carta].Width * escala) + 40;
         }
     }
-
     private string GetEstadoSalud(int hp)
     {
         return hp switch
@@ -400,7 +455,28 @@ public class Printer
             >1 => "Org Zombie"
         };
     }
+    private bool PlayerCartasManoFueraTurno(Player player, Dictionary<Cartas, Texture2D> tex)
+    {
+        int posX = 130;
+        int posY = 1200;
+        float escala = 0.3f;
+        for (int i = 0; i < player.cartasmano.Count; i++)
+        {
+            Cartas carta = player.cartasmano[i];
+            Texture2D t = tex[carta];
 
+            if (carta == null)
+            {
+                continue;
+            }
+
+            CargarTextura(carta, tex);
+
+            Raylib.DrawTextureEx(tex[carta], new Vector2(posX, posY), 0f, escala, Color.White);
+            posX += (int)(tex[carta].Width * escala) + 20;
+        }
+        return false;
+    }
     private void DibujarOrganosEnemigos(Enemy[] enemies, Dictionary<Cartas, Texture2D> tex)
     {
         int posY = 300;
@@ -493,317 +569,4 @@ public class Printer
 
         return Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), hitbox);
     }
-    public bool ElegirOrganoComodin(Player player, int indiceCarta,
-                                ref bool mostrarUI,
-                                Dictionary<Cartas, Texture2D> texturas, Mazo<Cartas> mazo)
-{
-    // Fondo semitransparente
-    Raylib.DrawRectangle(0, 0, Raylib.GetScreenWidth(), Raylib.GetScreenHeight(),
-                         Raylib.ColorAlpha(Color.Black, 0.5f));
-
-    int w = 600;
-    int h = 300;
-    int x = (Raylib.GetScreenWidth() - w) / 2;
-    int y = (Raylib.GetScreenHeight() - h) / 2;
-
-    // Ventana
-    Raylib.DrawRectangle(x, y, w, h, Color.DarkGray);
-    Raylib.DrawRectangleLines(x, y, w, h, Color.White);
-
-    Raylib.DrawText("Elige dónde colocar el órgano", x + 20, y + 20, 28, Color.White);
-
-    // Coordenadas de los 4 espacios
-    int espacioX = x + 40;
-    int espacioY = y + 100;
-    int espacioW = 120;
-    int espacioH = 160;
-
-    Cartas carta = player.cartasmano[indiceCarta];
-    Texture2D tex = texturas[carta];
-
-    for (int slot = 0; slot < 4; slot++)
-    {
-        Rectangle rect = new Rectangle(espacioX + slot * (espacioW + 20), espacioY, espacioW, espacioH);
-
-        bool ocupado = player.organos[slot] != null;
-        bool hover = Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), rect);
-
-        
-        Color fondo = ocupado ? Color.Red : Color.DarkGreen;
-        if (hover) fondo = ocupado ? Color.Maroon : Color.Green;
-
-        Raylib.DrawRectangleRec(rect, fondo);
-        Raylib.DrawRectangleLines((int)rect.X, (int)rect.Y, espacioW, espacioH, Color.White);
-
-        
-        Raylib.DrawText($"Espacio {slot + 1}", (int)rect.X + 10, (int)rect.Y + 10, 20, Color.White);
-
-        
-        if (ocupado)
-        {
-            Raylib.DrawText(player.organos[slot].Nombre +"\n"+ player.organos[slot].Tipo,
-                (int)rect.X + 10,
-                (int)rect.Y + 40,
-                18,
-                Color.White);
-        }
-
-        
-        if (hover && Raylib.IsMouseButtonPressed(MouseButton.Left))
-        {
-            if (ocupado)
-            {
-                // Mostrar mensaje de error
-                Raylib.DrawText("Ese espacio ya está ocupado",
-                    x + 20, y + h - 40, 24, Color.Yellow);
-            }
-            else
-            {
-                // Colocar órgano
-                player.organos[slot] = carta;
-                player.cartasmano.RemoveAt(indiceCarta);
-                mazo.CogerCarta(player);
-                mostrarUI = false;
-                return true;
-            }
-        }
-    }
-
-    // Botón cancelar
-    if (Raygui.GuiButton(new Rectangle(x + w - 140, y + h - 50, 120, 40), "Cancelar") != 0)
-    {
-        mostrarUI = false;
-        return false;
-    }
-
-    return false;
-}
-    
-    public bool ElegirCuraComodín(Player player, int indiceCarta, ref bool mostrarUI, Dictionary<Cartas, Texture2D> texturas, Mazo<Cartas> mazo, List<Cartas> cartas)
-{
-    // Fondo semitransparente
-    Raylib.DrawRectangle(0, 0, Raylib.GetScreenWidth(), Raylib.GetScreenHeight(),
-                         Raylib.ColorAlpha(Color.Black, 0.5f));
-
-    int w = 600;
-    int h = 300;
-    int x = (Raylib.GetScreenWidth() - w) / 2;
-    int y = (Raylib.GetScreenHeight() - h) / 2;
-
-    // Ventana
-    Raylib.DrawRectangle(x, y, w, h, Color.DarkGray);
-    Raylib.DrawRectangleLines(x, y, w, h, Color.White);
-
-    Raylib.DrawText("Elige que organo curar", x + 20, y + 20, 28, Color.White);
-
-    // Coordenadas de los 4 espacios
-    int espacioX = x + 40;
-    int espacioY = y + 100;
-    int espacioW = 120;
-    int espacioH = 160;
-
-    Cartas carta = player.cartasmano[indiceCarta];
-    Texture2D tex = texturas[carta];
-
-    for (int slot = 0; slot < 4; slot++)
-    {
-        Rectangle rect = new Rectangle(espacioX + slot * (espacioW + 20), espacioY, espacioW, espacioH);
-
-        bool ocupado = player.organos[slot] != null;
-        bool hover = Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), rect);
-
-        
-        Color fondo = ocupado ? Color.DarkGreen : Color.Red;
-        if (hover) fondo = ocupado ? Color.Green : Color.Maroon;
-
-        Raylib.DrawRectangleRec(rect, fondo);
-        Raylib.DrawRectangleLines((int)rect.X, (int)rect.Y, espacioW, espacioH, Color.White);
-
-        
-        Raylib.DrawText($"Espacio {slot + 1}", (int)rect.X + 10, (int)rect.Y + 10, 20, Color.White);
-
-        
-        if (!ocupado)
-        {
-            Raylib.DrawText("Sin Organo",
-                (int)rect.X + 10,
-                (int)rect.Y + 40,
-                18,
-                Color.White);
-        } 
-        if (ocupado)
-        {
-            Raylib.DrawText(player.organos[slot].Nombre +"\n"+ player.organos[slot].Tipo,
-                (int)rect.X + 10,
-                (int)rect.Y + 40,
-                18,
-                Color.White);
-        }
-
-        
-        if (hover && Raylib.IsMouseButtonPressed(MouseButton.Left))
-        {
-            if (!ocupado)
-            {
-                // Mostrar mensaje de error
-                Raylib.DrawText("No hay organo ahí",
-                    x + 20, y + h - 40, 24, Color.Yellow);
-            }
-            else if (player.organos[slot] is Organos or)
-            {
-                or.HP++;
-                if (or.HP == 4)
-                {
-                    or.inmunizado = true;
-                }
-                cartas.Add(player.cartasmano[indiceCarta]);
-                player.cartasmano.RemoveAt(indiceCarta);
-                mazo.CogerCarta(player);
-                mostrarUI = false;
-                return true;
-            }
-        }
-    }
-
-    // Botón cancelar
-    if (Raygui.GuiButton(new Rectangle(x + w - 140, y + h - 50, 120, 40), "Cancelar") != 0)
-    {
-        mostrarUI = false;
-        return false;
-    }
-
-    return false;
-}
-    public bool ElegirEnemigo(int numEnemigos,ref bool mostrarUI,ref int enemigoElegido)
-    {
-        Raylib.DrawRectangle(0, 0, Raylib.GetScreenWidth(), Raylib.GetScreenHeight(),
-            Raylib.ColorAlpha(Color.Black, 0.5f));
-
-        int w = 500;
-        int h = 250;
-        int x = (Raylib.GetScreenWidth() - w) / 2;
-        int y = (Raylib.GetScreenHeight() - h) / 2;
-
-        Raylib.DrawRectangle(x, y, w, h, Color.DarkGray);
-        Raylib.DrawRectangleLines(x, y, w, h, Color.White);
-
-        Raylib.DrawText("¿A qué enemigo quieres infectar?", x + 20, y + 20, 28, Color.White);
-
-        int posX = x + 40;
-        int posY = y + 100;
-
-        for (int i = 0; i < numEnemigos; i++)
-        {
-            Rectangle rect = new Rectangle(posX + i * 150, posY, 120, 60);
-
-            bool hover = Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), rect);
-
-            Raylib.DrawRectangleRec(rect, hover ? Color.SkyBlue : Color.DarkBlue);
-            Raylib.DrawRectangleLines((int)rect.X, (int)rect.Y, 120, 60, Color.White);
-
-            Raylib.DrawText($"Enemigo {i + 1}", (int)rect.X + 10, (int)rect.Y + 20, 20, Color.White);
-
-            if (hover && Raylib.IsMouseButtonPressed(MouseButton.Left))
-            {
-                enemigoElegido = i;
-                mostrarUI = false;
-                return true;
-            }
-        }
-
-        return false;
-    }
-    
-    public bool Infectar(Player player, Enemy enemy, List<Cartas> cartas, int indiceCarta, int organoObjetivo)
-    {
-        Cartas bacteria = player.cartasmano[indiceCarta];
-
-        if (enemy.organos[organoObjetivo] is Organos org)
-        {
-            if (org.inmunizado) return false;
-
-            org.HP--;
-
-            if (org.HP == 0)
-            {
-                cartas.Add(org);
-                enemy.organos[organoObjetivo] = null;
-                org.HP = 2;
-            }
-
-            cartas.Add(bacteria);
-            player.cartasmano.RemoveAt(indiceCarta);
-            return true;
-        }
-
-        return false;
-    }
-
-    public bool ElegirOrganoEnemigo(Enemy enemigo,
-        ref bool mostrarUI,
-        ref int organoElegido,
-        Dictionary<Cartas, Texture2D> tex)
-    {
-        Raylib.DrawRectangle(0, 0, Raylib.GetScreenWidth(), Raylib.GetScreenHeight(),
-            Raylib.ColorAlpha(Color.Black, 0.5f));
-
-        int w = 800;
-        int h = 400;
-        int x = (Raylib.GetScreenWidth() - w) / 2;
-        int y = (Raylib.GetScreenHeight() - h) / 2;
-
-        Raylib.DrawRectangle(x, y, w, h, Color.DarkGray);
-        Raylib.DrawRectangleLines(x, y, w, h, Color.White);
-
-        Raylib.DrawText("Elige un órgano del enemigo para infectar",
-            x + 20, y + 20, 28, Color.White);
-
-        int posX = x + 40;
-        int posY = y + 120;
-        float escala = 0.4f;
-
-        for (int i = 0; i < enemigo.organos.Length; i++)
-        {
-            Cartas carta = enemigo.organos[i];
-            if (carta == null) continue;
-
-            Texture2D t = tex[carta];
-
-            Rectangle rect = new Rectangle(posX, posY,
-                t.Width * escala,
-                t.Height * escala);
-
-            bool hover = Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), rect);
-
-            Raylib.DrawTextureEx(t, new Vector2(posX, posY), 0f, escala, Color.White);
-
-            if (hover)
-            {
-                Raylib.DrawRectangleLines(posX - 4, posY - 4,
-                    (int)(t.Width * escala) + 8,
-                    (int)(t.Height * escala) + 8,
-                    Color.Yellow);
-
-                if (Raylib.IsMouseButtonPressed(MouseButton.Left))
-                {
-                    organoElegido = i;
-                    mostrarUI = false;
-                    return true;
-                }
-            }
-
-            posX += (int)(t.Width * escala) + 40;
-        }
-
-        if (Raygui.GuiButton(new Rectangle(x + w - 140, y + h - 50, 120, 40), "Cancelar") != 0)
-        {
-            mostrarUI = false;
-            return false;
-        }
-
-        return false;
-    }
-
-
-
 }
