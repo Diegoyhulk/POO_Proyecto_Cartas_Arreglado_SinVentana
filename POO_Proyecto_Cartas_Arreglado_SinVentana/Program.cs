@@ -19,11 +19,9 @@ class Program
         Player player = new Player();
         Enemy[] enemy = new Enemy[] {new Enemy(), new Enemy(), new Enemy()};
         Coleccion coleccion = new Coleccion();
-        TurnoPlayer turnoPlayer = new TurnoPlayer();
         EnemyAI ai = new EnemyAI();
         EspecialesC esp = new EspecialesC();
         List<Jugador> players = new List<Jugador>();
-        EnemyState estate = new EnemyState();
         players.Add(player);
         while (true){
             if (Elegirenemigos()){break;}
@@ -32,7 +30,6 @@ class Program
         {
             players.Add(enemy[j]);
         }
-        estate.FinalizarPartida += AcabarPartida;
         coleccion.GenerarMazo();
         mazo.Shuffle(coleccion.cartas);
         mazo.CartasIniciales(player);
@@ -60,52 +57,7 @@ class Program
 
         Raylib.CloseWindow();
     }
-    public static void AcabarPartida(bool win, bool lose)
-    {
-        endScreen = true;
-        resultadoWin = win;
-        resultadoLose = lose;
-    }
-    public static bool DibujarFinPartida(bool win, bool lose)
-    {
-        Raylib.BeginDrawing();
-        Raylib.ClearBackground(Color.DarkGreen);
-        string mensaje = win
-            ? "¡Tienes todos los órganos sanos!\n\n¡HAS GANADO!"
-            : "El enemigo tiene todos los órganos sanos.\n\nHAS PERDIDO";
-
-        Color color = win ? Color.Green : Color.Red;
-
-        // Fondo semitransparente
-        Raylib.DrawRectangle(0, 0, Raylib.GetScreenWidth(), Raylib.GetScreenHeight(),
-            Raylib.ColorAlpha(Color.Black, 0.7f));
-
-        int w = 900;
-        int h = 400;
-        int x = (Raylib.GetScreenWidth() - w) / 2;
-        int y = (Raylib.GetScreenHeight() - h) / 2;
-
-        Raylib.DrawRectangle(x, y, w, h, Color.DarkGray);
-        Raylib.DrawRectangleLines(x, y, w, h, Color.White);
-
-        Raylib.DrawText(mensaje, x + 40, y + 80, 40, color);
-
-        Rectangle boton = new Rectangle(x + w/2 - 100, y + h - 80, 200, 50);
-        bool hover = Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), boton);
-
-        Raylib.DrawRectangleRec(boton, hover ? Color.SkyBlue : Color.DarkBlue);
-        Raylib.DrawRectangleLines((int)boton.X, (int)boton.Y, (int)boton.Width, (int)boton.Height, Color.White);
-        Raylib.DrawText("SALIR", (int)boton.X + 55, (int)boton.Y + 10, 30, Color.White);
-
-        if (hover && Raylib.IsMouseButtonPressed(MouseButton.Left))
-        {
-            Raylib.EndDrawing();
-            return true;
-        }
-        
-        Raylib.EndDrawing();
-        return false;
-    }
+    
 
 
 

@@ -5,18 +5,14 @@ namespace POO_Proyecto_Cartas_Arreglado_SinVentana.MaquinaDeEstado;
 
 public class EnemyState: IState
 {
-    
-    private bool win;
-    private bool lose;
-    public event Action<bool,bool> FinalizarPartida;
     public void Enter(IState newState)
     {
         //Turno Enemigo
         TurnosEnemigos(GameManager.Instance.coleccion, GameManager.Instance.mazo, GameManager.Instance.player, GameManager.Instance.enemies
             , GameManager.Instance.ai, GameManager.Instance.num, GameManager.Instance.players, GameManager.Instance.comando, GameManager.Instance.texturas);
         //Acaba el turno
-        ComprobarOrganosSaludables(GameManager.Instance.players,ref win,ref lose);
-        MaquinaEstado.Instance.ChangeState(new PlayerIdleState());
+        ComprobarOrganosSaludables(GameManager.Instance.players);
+        MaquinaEstado.Instance.ChangeState(new TurnoPlayer());
     }
     private static void TurnosEnemigos(Coleccion coleccion, Mazo<Cartas> mazo, Player player, Enemy[] enemy, EnemyAI ai,
         int num, List<Jugador> players,  EspecialesC comando, Dictionary<Cartas, Texture2D> texturas)
@@ -31,11 +27,19 @@ public class EnemyState: IState
             MaquinaEstado.Instance.ChangeState(new NoPlayerTunro());
             Thread.Sleep(tiempo);
         }
+        if (GameManager.Instance.mazo.coleccion.Count == 0)
+        {
+            GameManager.Instance.mazo.Shuffle(GameManager.Instance.coleccion.cartas);
+        }
         if (num >= 2)
         {
             ai.ETurno(enemy,mazo,coleccion.cartas,player, comando, players,1, num);
             MaquinaEstado.Instance.ChangeState(new NoPlayerTunro());
             Thread.Sleep(tiempo);
+        }
+        if (GameManager.Instance.mazo.coleccion.Count == 0)
+        {
+            GameManager.Instance.mazo.Shuffle(GameManager.Instance.coleccion.cartas);
         }
         if (num == 3)
         {
@@ -44,7 +48,7 @@ public class EnemyState: IState
             Thread.Sleep(tiempo);
         }
     }
-    private void ComprobarOrganosSaludables(List<Jugador> players,ref bool win, ref bool lose)
+    private void ComprobarOrganosSaludables(List<Jugador> players)
     {
         foreach (Jugador player in players)
         {
@@ -60,13 +64,13 @@ public class EnemyState: IState
                 {
                     if (player is Player)
                     {
-                        win = true;
+                        GameManager.Instance.winstate = true;
                     }
                     else if (player is Enemy)
                     {
-                        lose = true;
+                        GameManager.Instance.winstate = false;
                     }
-                    FinalizarPartida?.Invoke(win,lose);
+                    MaquinaEstado.Instance.ChangeState(new EndState());
                 }
             }
         }

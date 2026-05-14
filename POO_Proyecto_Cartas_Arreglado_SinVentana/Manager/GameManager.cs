@@ -29,4 +29,5 @@ public class GameManager
     public int indiceCarta;
     public int indiceenemigo;
     public Especiales esp;
+    public bool winstate;
 }
