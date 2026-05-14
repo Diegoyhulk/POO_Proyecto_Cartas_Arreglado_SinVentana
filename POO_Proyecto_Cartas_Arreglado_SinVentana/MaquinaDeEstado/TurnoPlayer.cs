@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using POO_Proyecto_Cartas_Arreglado_SinVentana.ASSCCI;
 using POO_Proyecto_Cartas_Arreglado_SinVentana.Funciones;
 using POO_Proyecto_Cartas_Arreglado_SinVentana.Manager;
 using POO_Proyecto_Cartas_Arreglado_SinVentana.MaquinaDeEstado;
