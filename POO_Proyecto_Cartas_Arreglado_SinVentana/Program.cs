@@ -1,4 +1,6 @@
-﻿using POO_Proyecto_Cartas_Arreglado_SinVentana.UI;
+﻿using POO_Proyecto_Cartas_Arreglado_SinVentana.Manager;
+using POO_Proyecto_Cartas_Arreglado_SinVentana.MaquinaDeEstado;
+using POO_Proyecto_Cartas_Arreglado_SinVentana.UI;
 using Raylib_cs;
 using raygui_cs;
 
@@ -17,12 +19,12 @@ class Program
         Player player = new Player();
         Enemy[] enemy = new Enemy[] {new Enemy(), new Enemy(), new Enemy()};
         Coleccion coleccion = new Coleccion();
-        Mesa mesa = new Mesa();
+        TurnoPlayer turnoPlayer = new TurnoPlayer();
         EnemyAI ai = new EnemyAI();
         EspecialesC esp = new EspecialesC();
         List<Jugador> players = new List<Jugador>();
+        EnemyState estate = new EnemyState();
         players.Add(player);
-        
         while (true){
             if (Elegirenemigos()){break;}
         }
@@ -30,7 +32,7 @@ class Program
         {
             players.Add(enemy[j]);
         }
-        mesa.FinalizarPartida += AcabarPartida;
+        estate.FinalizarPartida += AcabarPartida;
         coleccion.GenerarMazo();
         mazo.Shuffle(coleccion.cartas);
         mazo.CartasIniciales(player);
@@ -41,25 +43,18 @@ class Program
             if(num == i){break;}
             i++;
         }
+        GameManager.Instance.player = player;
+        GameManager.Instance.mazo = mazo;
+        GameManager.Instance.num = num;
+        GameManager.Instance.texturas = texturas;
+        GameManager.Instance.coleccion = coleccion;
+        GameManager.Instance.enemies = enemy;
+        GameManager.Instance.ai = ai;
+        GameManager.Instance.comando = esp;
+        GameManager.Instance.players = players;
         Raylib.InitWindow(2560, 1500, "Pantalla");
         Raylib.SetTargetFPS(60);
-        
-
-        while (!Raylib.WindowShouldClose())
-        {
-
-            if (!endScreen)
-            {
-                mesa.Turno(ref coleccion, ref mazo, ref player, ref enemy, ref ai, ref esp, num, players, texturas);
-            }
-            else
-            {
-                if (DibujarFinPartida(resultadoWin, resultadoLose))
-                    break;
-            }
-
-        }
-
+        MaquinaEstado.Instance.ChangeState(new TurnoPlayer());
         foreach (var tex in texturas.Values)
             Raylib.UnloadTexture(tex);
 
