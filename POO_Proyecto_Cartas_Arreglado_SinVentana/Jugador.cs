@@ -10,20 +10,6 @@ public class Jugador
 {
     public List<Cartas> cartasmano = new List<Cartas>();
     public Cartas[] organos = new Organos[4];
-
-    protected static void Nombrar_Organo(Cartas organo, int i)
-    {
-        WriteLine($"Espacio {i}:{organo.Nombre}");
-        WriteLine($"| tipo:{organo.Tipo}");
-    }
-
-    protected static void ExistentOrgan()
-    {
-    }
-
-    protected static void InputNotValid()
-    {
-    }
 }
 public class Player : Jugador
 {
@@ -43,7 +29,6 @@ public class Player : Jugador
                     }
                     else
                     {
-                        ExistentOrgan();
                         break;
                     }
                 }
@@ -57,7 +42,6 @@ public class Player : Jugador
                     }
                     else
                     {
-                        ExistentOrgan();
                         break;
                     }
                 }
@@ -71,7 +55,6 @@ public class Player : Jugador
                     }
                     else
                     {
-                        ExistentOrgan();
                         break;
                     }
                 }
@@ -85,7 +68,6 @@ public class Player : Jugador
                     }
                     else
                     {
-                        ExistentOrgan();
                         break;
                     }
                 }
